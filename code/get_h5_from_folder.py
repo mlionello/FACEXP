@@ -14,6 +14,8 @@ def get_h5(input_path, output_path, model):
 
 	for file_name in input_path.glob('*.avi'):
 		output_file = output_path / (file_name.stem + '.h5')
+		if os.path.isfile(output_file):
+			continue
 		print("encoding video from: " + str(file_name) + " to: " + str(output_file))
 
 		try:
