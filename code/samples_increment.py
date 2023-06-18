@@ -13,6 +13,9 @@ labels_path = "./labels.npy"
 features = np.load(features_path, allow_pickle=True)
 labels = np.load(labels_path, allow_pickle=True)
 X = features.transpose()
+
+
+
 # hit_rate = np.where(labels[:, 5]>50)[0]
 # X = X[hit_rate, :]
 # labels = labels[hit_rate, :]
