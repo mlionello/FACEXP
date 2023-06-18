@@ -31,9 +31,6 @@ for j, fileh5 in enumerate(in_folder.glob("*.h5")):
         else:
             ref_mean_subj = np.concatenate((ref_mean_subj, np.mean(data_in["v"], 0)[:, :, None]), axis=2)
 
-    if j == 10:
-        break
-
 # align info entries with vertices
 valid_data_indices = []
 for x in file_ids:
