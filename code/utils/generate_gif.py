@@ -10,16 +10,14 @@ def create_gif(file_in, out_folder):
     with h5py.File(file_in) as data_in:
         vertices = np.array(data_in["v"])
     fig, ax = plt.subplots(figsize=(5,5))
-    an_ind = 2
-    an_data = vertices[an_ind]
 
     def update(i):
         ax.clear()
-        ax.scatter(an_data[i,:, 0], an_data[i,:, 1])
+        ax.scatter(vertices[i, :, 0], vertices[i, :, 1])
         plt.xlim(-9, 9)
         plt.ylim(-10, 10)
 
-    ani = animation.FuncAnimation(fig, update, frames=an_data.shape[0], interval=1)
+    ani = animation.FuncAnimation(fig, update, frames=vertices.shape[0], interval=1)
     ani.save(out_folder / (file_in.stem + '.gif'), writer='pillow')
     return
 

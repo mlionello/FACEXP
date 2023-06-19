@@ -10,3 +10,15 @@ Traceback (most recent call last):
 AttributeError: 'BatchResults' object has no attribute 'face_idx'
 
 
+ERROR IN PROCESSING ../PEDFE_set_clips/49_dg_1.avi
+Error: 'BatchResults' object has no attribute 'face_idx'
+Traceback (most recent call last):
+  File "/home/matteo/Documents/code/FACEXP/code/get_h5_from_folder.py", line 22, in get_h5
+    data = videorecon(file_name, recon_model=model, loglevel='WARNING')
+  File "/home/matteo/.conda/envs/medusa/lib/python3.9/site-packages/medusa/recon/recon.py", line 102, in videorecon
+    recon_results.filter_faces(present_threshold=0.1)
+  File "/home/matteo/.conda/envs/medusa/lib/python3.9/site-packages/medusa/containers/results.py", line 137, in filter_faces
+    keep = filter_faces(self.face_idx, self.n_img, present_threshold)
+AttributeError: 'BatchResults' object has no attribute 'face_idx'
+
+
