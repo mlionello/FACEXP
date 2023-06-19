@@ -3,9 +3,6 @@ from pathlib import Path
 import h5py
 from scipy.spatial.distance import pdist
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import sys
 
 df = pd.read_excel(r'../samplevideo/PEDFE/Supplemental_Material_T2.xlsx')
 first_row_index = df.first_valid_index()
@@ -52,14 +49,3 @@ for k, vertix in enumerate(vertices):
 np.save('features', features)
 np.save('labels', valid_data)
 
-fig, ax = plt.subplots(figsize=(5,5))
-an_ind = 2
-an_data = vertices[an_ind]
-def update(i):
-    ax.clear()
-    ax.scatter(an_data[i,:, 0], an_data[i,:, 1])
-    plt.xlim(-9, 9)
-    plt.ylim(-10, 10)
-
-ani = animation.FuncAnimation(fig, update, frames=an_data.shape[0], interval=1)
-ani.save('scatter.gif', writer='pillow')
