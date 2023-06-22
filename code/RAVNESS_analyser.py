@@ -50,7 +50,7 @@ unique_actors = np.unique(actors)
 training_score = []
 test_score = []
 for actor_ind in unique_actors:
-    test_indices = (actors == actor_ind) & valid_indices
+    test_indices = (actors == actor_ind) | (actors == actor_ind+1) & valid_indices
     training_indices = ~test_indices & valid_indices
     pca = PCA(n_components=12)
     pca.fit(X[training_indices, :])
