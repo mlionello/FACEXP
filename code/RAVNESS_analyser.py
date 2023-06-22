@@ -42,7 +42,7 @@ mod = labels[:, mod_col_ind]
 y = np.reshape(emotions, (-1,))
 
 valid_indices = (mod == 2)
-valid_indices = valid_indices & (emotions>2) & (ch == 2) & (intensity == 2)
+valid_indices = valid_indices & (emotions>2) #& (ch == 2) & (intensity == 2)
 #valid_indices = valid_indices & (rep == 1)
 valid_indices = valid_indices & (intensity == 2)
 
@@ -50,9 +50,9 @@ unique_actors = np.unique(actors)
 training_score = []
 test_score = []
 for actor_ind in unique_actors:
-    test_indices = (actors == actor_ind)
-    training_indices = ~test_indices & valid_indices
-    test_indices = test_indices & valid_indices
+    actor_target_indices = (actors == actor_ind)
+    training_indices = ~actor_target_indices & valid_indices
+    test_indices = actor_target_indices & valid_indices
     test_indices = test_indices & (ch == 2) & (intensity == 2)
     pca = PCA(n_components=12)
     pca.fit(X[training_indices, :])
