@@ -25,17 +25,33 @@ labels = labels_init[()]['labels']
 labels = np.array(labels)
 em_col_ind = np.where([a == "Emotion" for a in labels_ids])[0][0]
 actor_col_ind = np.where([a == "Actor" for a in labels_ids])[0][0]
+rep_col_ind = np.where([a == "Repetition" for a in labels_ids])[0][0]
+ch_col_ind = np.where([a == "Channel" for a in labels_ids])[0][0]
+int_col_ind = np.where([a == "Intensity" for a in labels_ids])[0][0]
+sttm_col_ind = np.where([a == "Statement" for a in labels_ids])[0][0]
+mod_col_ind = np.where([a == "Modality" for a in labels_ids])[0][0]
+
 emotions = labels[:, em_col_ind]
 actors = labels[:, actor_col_ind]
+rep = labels[:, rep_col_ind]
+ch = labels[:, ch_col_ind]
+intensity = labels[:, int_col_ind]
+sttm = labels[:, sttm_col_ind]
+mod = labels[:, mod_col_ind]
+
 y = np.reshape(emotions, (-1,))
+
+valid_indices = (mod == 2)
+#valid_indices = valid_indices & (rep == 1)
+valid_indices = valid_indices & (intensity == 2)
 
 unique_actors = np.unique(actors)
 training_score = []
 test_score = []
 for actor_ind in unique_actors:
-    test_indices = np.where(actors == actor_ind)[0]
-    training_indices = [ind for ind in range(len(y)) if ind not in test_indices]
-    pca = PCA(n_components=2)
+    test_indices = (actors == actor_ind) & valid_indices
+    training_indices = ~test_indices & valid_indices
+    pca = PCA(n_components=12)
     pca.fit(X[training_indices, :])
     X = pca.transform(X)
 
@@ -52,11 +68,12 @@ for actor_ind in unique_actors:
     score = model.score(X_test, y_test)
     print(f"test score: {score:.3f};", end='\n')
     test_score.append(score)
-    print()
 
+valid_indices = (mod == 2)
+#valid_indices = valid_indices & intensity == 2
 cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
-model = knnc(n_neighbors=3)
-scorestot = cross_validate(model, X, y, cv=cv, return_train_score=True)
+model = knnc(n_neighbors=5)
+scorestot = cross_validate(model, X[valid_indices, :], y[valid_indices], cv=cv, return_train_score=True)
 print(f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
       f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}")
 
