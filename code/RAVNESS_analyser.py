@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import FastICA
 from sklearn.decomposition import PCA
 
+pca_n = 20
+k_nn = 5
+
 features_path = "../features.npy"
 labels_path = "../labels.npy"
 
@@ -53,16 +56,16 @@ for actor_ind in unique_actors:
     training_indices = ~actor_target_indices & valid_indices
     test_indices = actor_target_indices & valid_indices
     test_indices = test_indices & (ch == 2) & (intensity == 2)
-    pca = PCA(n_components =20)
+    pca = PCA(n_components =pca_n)
     pca.fit(X[training_indices, :])
-    X = pca.transform(X)
+    X_pca = pca.transform(X)
 
     y_test = y[test_indices]
-    X_test = X[test_indices, :]
+    X_test = X_pca[test_indices, :]
     y_training = y[training_indices]
-    X_training = X[training_indices, :]
+    X_training = X_pca[training_indices, :]
 
-    model = knnc(n_neighbors=5)
+    model = knnc(n_neighbors=k_nn)
     model.fit(X_training, y_training)
     score = model.score(X_training, y_training)
     print(f"for actor {actor_ind}, training score (len {np.sum(training_indices)}): {score:.3f};", end=' ')
@@ -80,9 +83,18 @@ print(f"training m: {np.mean(training_score):.3f}, std:  {np.std(training_score)
 
 
 cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
-model = knnc(n_neighbors=5)
+model = knnc(n_neighbors=k_nn)
+pca = PCA(n_components=pca_n)
+X[valid_indices, :] = pca.fit_transform(X[valid_indices, :])
 scorestot = cross_validate(model, X[valid_indices, :], y[valid_indices], cv=cv, return_train_score=True)
 print(f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
       f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}")
 
-np.save('scores', np.concatenate(test_score))
+scores{
+    "training_score": training_score,
+    "test_score": test_score,
+    "preds": preds,
+    "scorestot": scorestot,
+    "k": k,
+    "pca_n" : pca_n,
+}
