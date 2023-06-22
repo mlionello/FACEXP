@@ -20,9 +20,6 @@ labels_init = np.load(labels_path, allow_pickle=True)
 
 print(f"total number of subjects: {X.shape[0]}")
 
-pca = PCA(n_components=20)
-X = pca.fit_transform(X)
-
 labels_ids = labels_init[()]["column_names"]
 labels = labels_init[()]['labels']
 labels = np.array(labels)
@@ -30,20 +27,35 @@ em_col_ind = np.where([a == "Emotion" for a in labels_ids])[0][0]
 actor_col_ind = np.where([a == "Actor" for a in labels_ids])[0][0]
 emotions = labels[:, em_col_ind]
 actors = labels[:, actor_col_ind]
+y = np.reshape(emotions, (-1,))
 
 unique_actors = np.unique(actors)
-print(unique_actors)
-import sys
-sys.exit()
-for k in range(10):
-    pass
+training_score = []
+test_score = []
+for actor_ind in unique_actors:
+    test_indices = np.where(actors == actor_ind)[0]
+    training_indices = [ind for ind in range(len(y)) if ind not in test_indices]
+    pca = PCA(n_components=2)
+    pca.fit(X[training_indices, :])
+    X = pca.transform(X)
 
+    y_test = y[test_indices]
+    X_test = X[ test_indices, :]
+    y_training = y[training_indices]
+    X_training = X[training_indices, :]
 
-y = np.reshape(emotions, (-1,))
+    model = knnc(n_neighbors=5)
+    model.fit(X_training, y_training)
+    score = model.score(X_training, y_training)
+    print(f"for actor {actor_ind}, training score: {score:.3f};", end=' ')
+    training_score.append(score)
+    score = model.score(X_test, y_test)
+    print(f"test score: {score:.3f};", end='\n')
+    test_score.append(score)
+    print()
 
 cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
 model = knnc(n_neighbors=3)
-
 scorestot = cross_validate(model, X, y, cv=cv, return_train_score=True)
 print(f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
       f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}")
