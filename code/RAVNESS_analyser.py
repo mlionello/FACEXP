@@ -1,3 +1,5 @@
+import pickle
+
 import numpy as np
 from sklearn.model_selection import KFold, StratifiedKFold, StratifiedShuffleSplit, cross_validate
 from sklearn.neighbors import KNeighborsClassifier as knnc
@@ -85,12 +87,12 @@ print(f"training m: {np.mean(training_score):.3f}, std:  {np.std(training_score)
 cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
 model = knnc(n_neighbors=k_nn)
 pca = PCA(n_components=pca_n)
-X[valid_indices, :] = pca.fit_transform(X[valid_indices, :])
-scorestot = cross_validate(model, X[valid_indices, :], y[valid_indices], cv=cv, return_train_score=True)
+X_pca_valid = pca.fit_transform(X[valid_indices, :])
+scorestot = cross_validate(model, X_pca_valid[valid_indices, :], y[valid_indices], cv=cv, return_train_score=True)
 print(f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
       f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}")
 
-scores{
+scores = {
     "training_score": training_score,
     "test_score": test_score,
     "preds": preds,
@@ -98,3 +100,6 @@ scores{
     "k": k,
     "pca_n" : pca_n,
 }
+
+with open("data.pkl", "wb") as tofile:
+    pickle.dump(scores, tofile)
