@@ -76,7 +76,7 @@ for actor_ind in unique_actors:
     y_hat = model.predict(X_test)
     print(f"test score (len {np.sum(test_indices)}): {score:.3f};", end='\n')
     test_score.append(score)
-    preds.append([y_hat,y_test])
+    preds.append([y_hat, y_test])
 
 print(f"training m: {np.mean(training_score):.3f}, std:  {np.std(training_score):.3f},"
       f"test m: {np.mean(test_score):.3f}, "
@@ -88,7 +88,7 @@ cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
 model = knnc(n_neighbors=k_nn)
 pca = PCA(n_components=pca_n)
 X_pca_valid = pca.fit_transform(X[valid_indices, :])
-scorestot = cross_validate(model, X_pca_valid[valid_indices, :], y[valid_indices], cv=cv, return_train_score=True)
+scorestot = cross_validate(model, X_pca_valid, y[valid_indices], cv=cv, return_train_score=True)
 print(f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
       f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}")
 
