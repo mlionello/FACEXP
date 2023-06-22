@@ -42,6 +42,7 @@ mod = labels[:, mod_col_ind]
 y = np.reshape(emotions, (-1,))
 
 valid_indices = (mod == 2)
+valid_indices = valid_indices & (emotions>2)
 #valid_indices = valid_indices & (rep == 1)
 valid_indices = valid_indices & (intensity == 2)
 
