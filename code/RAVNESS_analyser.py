@@ -57,6 +57,7 @@ for actor_ind in unique_actors:
     pca = PCA(n_components=12)
     pca.fit(X[training_indices, :])
     X = pca.transform(X)
+    print(actor_ind)
     print(f"test score (len {np.sum(test_indices)});", end='\n')
 
 
