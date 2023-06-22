@@ -23,7 +23,7 @@ def get_dataset(inpath, outfolder, refh5):
     for j, fileh5 in enumerate(inpath.glob("*.h5")):
         print(str(j), end='\r')
         with h5py.File(fileh5) as data_in:
-            data_row = fileh5.stem.split('_')
+            data_row = fileh5.stem.split('-')
             labels.append([int(val) for val in data_row])
             file_ids.append('/'.join(fileh5.parts[-2:]))
             features.append(pdist(np.mean(data_in["v"], 0)) - pdist_rest)
