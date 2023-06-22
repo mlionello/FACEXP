@@ -43,7 +43,7 @@ y = np.reshape(emotions, (-1,))
 
 valid_indices = (mod == 2)
 valid_indices = valid_indices & (emotions>2)
-valid_indices = valid_indices & (rep == 1)
+valid_indices = valid_indices & (rep == 2)
 valid_indices = valid_indices & (intensity == 2)
 
 unique_actors = np.unique(actors)
@@ -66,11 +66,15 @@ for actor_ind in unique_actors:
     model = knnc(n_neighbors=5)
     model.fit(X_training, y_training)
     score = model.score(X_training, y_training)
-    print(f"for actor {actor_ind}, training score (len {np.sum(training_indices)}): {score:.3f};", end=' ')
+    #print(f"for actor {actor_ind}, training score (len {np.sum(training_indices)}): {score:.3f};", end=' ')
     training_score.append(score)
     score = model.score(X_test, y_test)
-    print(f"test score (len {np.sum(test_indices)}): {score:.3f};", end='\n')
+    #print(f"test score (len {np.sum(test_indices)}): {score:.3f};", end='\n')
     test_score.append(score)
+print(f"training m: {np.mean(training_score):.3f}, std:  {np.std(training_score):.3f},"
+      f"test m: {np.mean(test_score):.3f}, "
+      f"max {np.max(test_score):.3f}  min {np.min(test_score):.3f}, "
+      f"std:  {np.std(test_score):.3f}")
 
 valid_indices = (mod == 2)
 #valid_indices = valid_indices & intensity == 2
