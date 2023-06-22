@@ -14,10 +14,6 @@ labels_path = "../labels.npy"
 X = np.load(features_path, allow_pickle=True)
 labels_init = np.load(labels_path, allow_pickle=True)
 
-# hit_rate = np.where(labels[:, 5] > 70)[0]
-# X = X[hit_rate, :]
-# labels = labels[hit_rate, :]
-
 print(f"total number of subjects: {X.shape[0]}")
 
 labels_ids = labels_init[()]["column_names"]
@@ -38,6 +34,9 @@ ch = labels[:, ch_col_ind]
 intensity = labels[:, int_col_ind]
 sttm = labels[:, sttm_col_ind]
 mod = labels[:, mod_col_ind]
+
+sampl_per_actors = [len(np.where(actors==ac)[0]) for ac in np.unique(actors)]
+print(sampl_per_actors)
 
 y = np.reshape(emotions, (-1,))
 
