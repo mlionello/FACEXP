@@ -35,12 +35,9 @@ intensity = labels[:, int_col_ind]
 sttm = labels[:, sttm_col_ind]
 mod = labels[:, mod_col_ind]
 
-sampl_per_actors = [len(np.where(actors==ac)[0]) for ac in np.unique(actors)]
-print(sampl_per_actors)
-
 y = np.reshape(emotions, (-1,))
 
-valid_indices = (mod == 2)
+valid_indices = (mod == 2) & (actors ~= 18)
 valid_indices = valid_indices & (emotions>2)
 valid_indices = valid_indices & (rep == 2)
 valid_indices = valid_indices & (intensity == 2)
@@ -49,6 +46,8 @@ unique_actors = np.unique(actors)
 training_score = []
 test_score = []
 for actor_ind in unique_actors:
+    if actor_ind == 18:
+        continue
     actor_target_indices = (actors == actor_ind)
     training_indices = ~actor_target_indices & valid_indices
     test_indices = actor_target_indices & valid_indices
