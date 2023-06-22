@@ -65,10 +65,10 @@ for actor_ind in unique_actors:
     model = knnc(n_neighbors=5)
     model.fit(X_training, y_training)
     score = model.score(X_training, y_training)
-    print(f"for actor {actor_ind}, training score (len {len(training_indices)}): {score:.3f};", end=' ')
+    print(f"for actor {actor_ind}, training score (len {np.sum(training_indices)}): {score:.3f};", end=' ')
     training_score.append(score)
     score = model.score(X_test, y_test)
-    print(f"test score (len {len(test_indices)}): {score:.3f};", end='\n')
+    print(f"test score (len {np.sum(test_indices)}): {score:.3f};", end='\n')
     test_score.append(score)
 
 valid_indices = (mod == 2)
