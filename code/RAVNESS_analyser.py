@@ -52,7 +52,7 @@ for actor_ind in unique_actors:
     training_indices = ~actor_target_indices & valid_indices
     test_indices = actor_target_indices & valid_indices
     test_indices = test_indices & (ch == 2) & (intensity == 2)
-    pca = PCA(n_components=7)
+    pca = PCA(n_components=20)
     pca.fit(X[training_indices, :])
     X = pca.transform(X)
 
