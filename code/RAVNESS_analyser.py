@@ -97,7 +97,7 @@ scores = {
     "test_score": test_score,
     "preds": preds,
     "scorestot": scorestot,
-    "k": k,
+    "k": k_nn,
     "pca_n" : pca_n,
 }
 
