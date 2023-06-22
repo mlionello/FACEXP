@@ -38,7 +38,7 @@ mod = labels[:, mod_col_ind]
 y = np.reshape(emotions, (-1,))
 
 valid_indices = (mod == 2) & (actors != 18)
-valid_indices = valid_indices & (emotions>2)
+valid_indices = valid_indices & (emotions > 2)
 valid_indices = valid_indices & (rep == 2)
 valid_indices = valid_indices & (intensity == 2)
 
@@ -52,12 +52,12 @@ for actor_ind in unique_actors:
     training_indices = ~actor_target_indices & valid_indices
     test_indices = actor_target_indices & valid_indices
     test_indices = test_indices & (ch == 2) & (intensity == 2)
-    pca = PCA(n_components=12)
+    pca = PCA(n_components=7)
     pca.fit(X[training_indices, :])
     X = pca.transform(X)
 
     y_test = y[test_indices]
-    X_test = X[ test_indices, :]
+    X_test = X[test_indices, :]
     y_training = y[training_indices]
     X_training = X[training_indices, :]
 
@@ -94,23 +94,3 @@ plt.plot(pltscore[:, 1], label='train')
 
 plt.legend()
 plt.savefig('features_allsamples.png')
-
-# predicted_classes = []
-# actual_classes = []
-# matrix = 0
-# for train_ndx, test_ndx in cv.split(X, y):
-#     model = knnc(n_neighbors=5)
-#     train_X, train_y, test_X, test_y = X[train_ndx], y[train_ndx], X[test_ndx], y[test_ndx]
-#
-#     model.fit(train_X, train_y)
-#     predicted_classes = model.predict(test_X)
-#     cm = confusion_matrix(test_y, predicted_classes, labels=model.classes_)
-#     matrix = matrix + cm
-#     print(cm)
-#     print(np.sum(np.diag(cm))/np.sum(cm))
-#
-# print(matrix)
-# print(np.sum(np.diag(matrix))/np.sum(matrix))
-# disp = ConfusionMatrixDisplay(confusion_matrix=matrix, display_labels=model.classes_)
-# disp.plot()
-# plt.show()
