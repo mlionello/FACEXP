@@ -79,22 +79,10 @@ print(f"training m: {np.mean(training_score):.3f}, std:  {np.std(training_score)
       f"std:  {np.std(test_score):.3f}")
 
 
-valid_indices = (mod == 2)
-#valid_indices = valid_indices & intensity == 2
 cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
 model = knnc(n_neighbors=5)
 scorestot = cross_validate(model, X[valid_indices, :], y[valid_indices], cv=cv, return_train_score=True)
 print(f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
       f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}")
 
-pltscore = []
-for k in range(5, X.shape[1]):
-    cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
-    scores = cross_validate(model, X[:, : k], y, cv=cv, return_train_score=True)
-    pltscore.append([np.mean(scores["test_score"]), np.mean(scores["train_score"])])
-pltscore = np.array(pltscore)
-plt.plot(pltscore[:, 0], label='test')
-plt.plot(pltscore[:, 1], label='train')
-
-plt.legend()
-plt.savefig('features_allsamples.png')
+np.save('scores', np.concatenate(test_score))
