@@ -37,25 +37,14 @@ sttm = labels[:, sttm_col_ind]
 mod = labels[:, mod_col_ind]
 
 valid_indices = (mod == 2) & (actors != 18)
-valid_indices = valid_indices & (ch == 1)
+valid_indices = valid_indices & (ch == 2)
 
 print("\nemotions")
 [print(len(np.where(emotions[valid_indices]==em)[0]), end=' ') for em in np.unique(emotions)]
 
-print("\nactors")
-[print(len(np.where(actors==em)[0]), end=' ') for em in np.unique(actors)]
+for subj in np.unique(actors):
+    print(f"{subj} {len(np.where(emotions[valid_indices & (actors==subj)]==em)[0])}")
 
-print("\nrep")
-[print(len(np.where(rep==em)[0]), end=' ') for em in np.unique(rep)]
-
-print("\nsttm")
-[print(len(np.where(sttm==em)[0]), end=' ') for em in np.unique(sttm)]
-
-print("\nintensity")
-[print(len(np.where(intensity==em)[0]), end=' ') for em in np.unique(intensity)]
-
-print("\nch")
-[print(len(np.where(ch==em)[0]), end=' ') for em in np.unique(ch)]
 y = np.reshape(emotions, (-1,))
 import sys
 sys.exit()
