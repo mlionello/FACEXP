@@ -43,7 +43,7 @@ print("\nemotions")
 [print(len(np.where(emotions[valid_indices]==em)[0]), end=' ') for em in np.unique(emotions)]
 
 for subj in np.unique(actors):
-    print(f"{subj} {len(np.where(emotions[valid_indices & (actors==subj)]==em)[0])}")
+    print(f"{subj} {emotions[valid_indices & (actors==subj)].shape}")
 
 y = np.reshape(emotions, (-1,))
 import sys
