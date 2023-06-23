@@ -37,7 +37,7 @@ sttm = labels[:, sttm_col_ind]
 mod = labels[:, mod_col_ind]
 
 valid_indices = (mod == 2) & (actors != 18)
-#valid_indices = valid_indices & (ch == 2)
+valid_indices = valid_indices & (ch == 2)
 #valid_indices = valid_indices & (emotions > 2)
 
 print("\nemotions")
