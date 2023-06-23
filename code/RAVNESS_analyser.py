@@ -1,4 +1,5 @@
 import argparse
+import os
 import pickle
 from pathlib import Path
 
@@ -117,7 +118,9 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     }
     scores.update(custom_cond)
 
-    with open( outpathfolder / "data.pkl", "wb") as tofile:
+    if not outpathfolder.is_dir():
+        os.mkdir(outpathfolder)
+    with open(outpathfolder / "data.pkl", "wb") as tofile:
         pickle.dump(scores, tofile)
 
 if __name__=='__main__':
