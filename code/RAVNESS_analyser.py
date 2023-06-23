@@ -116,5 +116,19 @@ if __name__=='__main__':
         parser = argparse.ArgumentParser(description='run analysis on RAVDESS dataset')
         parser.add_argument('--input', type=str, help='input folder to features.npy and labels.npy')
         parser.add_argument('--out', type=str, default='./', help='output folder')
+        parser.add_argument('--tr_intensity', type=int, default='0', help='intensity level in training set (1 weak 2 strong)')
+        parser.add_argument('--tr_ch', type=int, default='0', help='channel number in training set (1 speech, 2 singing)')
+        parser.add_argument('--tr_rep', type=int, default='0', help='number of repetitions in training set')
+        parser.add_argument('--tst_intensity', type=int, default='0', help='channel number in testing set (1 speech, 2 singing)')
+        parser.add_argument('--tst_ch', type=int, default='0', help='channel number in testing set (1 speech, 2 singing)')
+        parser.add_argument('--tst_rep', type=int, default='./0', help='output folder')
         args = parser.parse_args()
-        run_analyse(Path(args.input), Path(args.out))
+        custom_cond = {
+            "tr_intensity" : args.tr_intensity,
+            "tr_ch": args.tr_ch,
+            "tr_rep": args.tr_rep,
+            "tst_intensity": args.tst_intensity,
+            "tst_ch": args.tst_ch,
+            "tst_rep": args.tst_rep,
+        }
+        run_analyse(Path(args.input), Path(args.out), custom_cond)
