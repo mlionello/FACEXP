@@ -37,12 +37,13 @@ def run_analyse(pathfolder, pca_n=20, k_nn=5):
     mod = labels[:, mod_col_ind]
 
     valid_indices = (mod == 2)  # & (actors != 18)
-    valid_indices = valid_indices & (ch == 2)
     valid_indices = valid_indices & (emotions > 2)
 
-    # valid_indices = valid_indices & (rep == 2)
-    # valid_indices = valid_indices & (intensity == 2)
+    tr_custom_ind = [True]*labels.shape[0]
+    tst_custom_ind = [True]*labels.shape[0]
+    tr_custom_ind = tr_custom_ind &
 
+    y = np.array(emotions,(-1))
     unique_actors = np.unique(actors)
     training_score = []
     test_score = []
@@ -51,8 +52,8 @@ def run_analyse(pathfolder, pca_n=20, k_nn=5):
         # if actor_ind == 18:
         #     continue
         actor_target_indices = (actors == actor_ind)
-        training_indices = ~actor_target_indices & valid_indices
-        test_indices = actor_target_indices & valid_indices
+        training_indices = ~actor_target_indices & valid_indices & tr_custom_ind
+        test_indices = actor_target_indices & valid_indices & tst_custom_ind
         test_indices = test_indices & (ch == 2) & (intensity == 2)
         pca = PCA(n_components = pca_n)
         pca.fit(X[training_indices, :])
