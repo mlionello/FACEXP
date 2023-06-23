@@ -28,7 +28,7 @@ def get_dataset(inpath, outfolder, refh5):
             labels.append([int(val) for val in data_row])
             file_ids.append('/'.join(fileh5.parts[-2:]))
             features.append(pdist(np.mean(data_in["v"], 0)) - pdist_rest)
-            if data_row[0] == '01':
+            if data_row[2] == '01':
                 collet_neutrals.append(np.mean(data_in["v"], 0))
 
     collet_neutrals = np.array(collet_neutrals)
