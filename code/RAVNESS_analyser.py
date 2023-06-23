@@ -47,13 +47,13 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
         tr_custom_ind = tr_custom_ind & (intensity==custom_cond["tr_intensity"])
     if custom_cond["tr_ch"]>0:
         tr_custom_ind = tr_custom_ind & (ch==custom_cond["tr_ch"])
-    if custom_cond["tr_rep"]>0:
+    CHECK! if custom_cond["tr_rep"]>0:
         tr_custom_ind = tr_custom_ind & (rep==custom_cond["tr_rep"])
     if custom_cond["tst_intensity"]>0:
         tst_custom_ind = tst_custom_ind & (intensity==custom_cond["tst_intensity"])
     if custom_cond["tst_ch"]>0:
         tst_custom_ind = tst_custom_ind & (ch==custom_cond["tst_ch"])
-    if custom_cond["tst_rep"]>0:
+    CHECK! if custom_cond["tst_rep"]>0:
         tst_custom_ind = tst_custom_ind & (rep==custom_cond["tst_rep"])
 
     # if channel is not only speech: remove actor 18th who does not sing!
@@ -126,7 +126,7 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
 if __name__=='__main__':
         parser = argparse.ArgumentParser(description='run analysis on RAVDESS dataset')
         parser.add_argument('--input', type=str, help='input folder to features.npy and labels.npy')
-        parser.add_argument('--out', type=str, default='./', help='output folder')
+        parser.add_argument('--output', type=str, default='./', help='output folder')
         parser.add_argument('--tr_intensity', type=int, default='0', help='intensity level in training set (1 weak 2 strong)')
         parser.add_argument('--tr_ch', type=int, default='0', help='channel number in training set (1 speech, 2 singing)')
         parser.add_argument('--tr_rep', type=int, default='0', help='number of repetitions in training set')
@@ -147,4 +147,4 @@ if __name__=='__main__':
         if custom_cond["tr_ch"] == 2:
             raise Exception("Sorry, training set cannot have only singing samples, which do not cover all the emotions")
 
-        run_analyse(Path(args.input), Path(args.out), custom_cond)
+        run_analyse(Path(args.input), Path(args.output), custom_cond)

@@ -35,6 +35,8 @@ y = np.reshape(emo_id, (-1,))
 cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
 model = knnc(n_neighbors=3)
 
+
+
 scoresp = cross_validate(model, Xp, yp, cv=cv, return_train_score=True)
 print(f"Posed: tr: {np.mean(scoresp['train_score']):.3f} +/- {np.std(scoresp['train_score']):.3f};"
       f"  tst: {np.mean(scoresp['test_score'])} +/- {np.std(scoresp['test_score'])}")

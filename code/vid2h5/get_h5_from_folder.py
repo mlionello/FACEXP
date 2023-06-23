@@ -4,7 +4,6 @@ from medusa.recon import videorecon
 from pathlib import Path
 import traceback
 import cv2
-import sys
 
 def get_h5(input_path, output_path, model):
 	input_path = Path(input_path)
