@@ -115,6 +115,7 @@ def run_analyse(pathfolder, pca_n=20, k_nn=5, custom_cond):
         "k": k_nn,
         "pca_n" : pca_n,
     }
+    scores.update(custom_cond)
 
     with open("data.pkl", "wb") as tofile:
         pickle.dump(scores, tofile)
@@ -140,7 +141,7 @@ if __name__=='__main__':
         }
         if custom_cond["tst_ch"] != 1:
             raise Exception("Sorry, test set cannot have singing samples as not all emotions are covered")
-        if custom_cond["tr_ch"] == 1:
+        if custom_cond["tr_ch"] == 2:
             raise Exception("Sorry, training set cannot have only singing samples, which do not cover all the emotions")
 
         run_analyse(Path(args.input), Path(args.out), custom_cond)
