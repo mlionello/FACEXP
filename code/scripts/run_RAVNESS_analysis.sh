@@ -8,7 +8,7 @@ for tr_intensity in 0 1; do
 
 outputid=trch_"$tr_ch"_trrep_"$tr_rep"_trintensity_"$tr_intensity"_tstrep_"$tst_rep"_tstintensity_"$tst_intensity"
 
-python RAVNESS_analyser --input /home/matteo.lionello/RAVNESS/ \
+python RAVNESS_analyser --input /home/matteo.lionello/RAVNESS/pdist_ownref/ \
         --output $outputid \
         --tr_ch $tr_ch \
         --tr_rep $tr_rep \
