@@ -28,13 +28,13 @@ int_col_ind = np.where([a == "Intensity" for a in labels_ids])[0][0]
 sttm_col_ind = np.where([a == "Statement" for a in labels_ids])[0][0]
 mod_col_ind = np.where([a == "Modality" for a in labels_ids])[0][0]
 
-print(f"em_col_ind {len(em_col_ind)}")
-print(f"actor_col_ind {len(actor_col_ind)}")
-print(f"rep_col_ind {len(rep_col_ind)}")
-print(f"ch_col_ind {len(ch_col_ind)}")
-print(f"int_col_ind {len(int_col_ind)}")
-print(f"sttm_col_ind {len(sttm_col_ind)}")
-print(f"mod_col_ind {len(mod_col_ind)}")
+print(f"em_col_ind {em_col_ind.shape}")
+print(f"actor_col_ind {actor_col_ind.shape}")
+print(f"rep_col_ind {rep_col_ind.shape}")
+print(f"ch_col_ind {ch_col_ind.shape}")
+print(f"int_col_ind {int_col_ind.shape}")
+print(f"sttm_col_ind {sttm_col_ind.shape}")
+print(f"mod_col_ind {mod_col_ind.shape}")
 print(f"labels shape {labels.shape}")
 
 
