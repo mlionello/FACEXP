@@ -8,7 +8,7 @@ from sklearn.neighbors import KNeighborsClassifier as knnc
 
 from sklearn.decomposition import PCA
 
-def run_analyse(pathfolder, pca_n=20, k_nn=5, custom_cond):
+def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     features_path = pathfolder / "features.npy"
     labels_path = pathfolder / "labels.npy"
 
@@ -117,7 +117,7 @@ def run_analyse(pathfolder, pca_n=20, k_nn=5, custom_cond):
     }
     scores.update(custom_cond)
 
-    with open("data.pkl", "wb") as tofile:
+    with open( outpathfolder / "data.pkl", "wb") as tofile:
         pickle.dump(scores, tofile)
 
 if __name__=='__main__':
