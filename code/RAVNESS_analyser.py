@@ -54,11 +54,12 @@ for actor_ind in unique_actors:
     training_indices = ~actor_target_indices & valid_indices
     test_indices = actor_target_indices & valid_indices
     test_indices = test_indices & (ch == 2) & (intensity == 2)
-    pca = PCA(n_components =pca_n)
+    pca = PCA(n_components = pca_n)
     pca.fit(X[training_indices, :])
     X_pca = pca.transform(X)
 
     y_test = y[test_indices]
+    print(f"{y_test} {np.unique(y_test)}")
     X_test = X_pca[test_indices, :]
     y_training = y[training_indices]
     X_training = X_pca[training_indices, :]
