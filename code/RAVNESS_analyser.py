@@ -28,6 +28,7 @@ def run_analyse(pathfolder, pca_n=20, k_nn=5, custom_cond):
     sttm_col_ind = np.where([a == "Statement" for a in labels_ids])[0][0]
     mod_col_ind = np.where([a == "Modality" for a in labels_ids])[0][0]
 
+    # N.B.
     emotions = labels[:, em_col_ind]
     actors = labels[:, actor_col_ind]
     rep = labels[:, rep_col_ind]
@@ -53,6 +54,12 @@ def run_analyse(pathfolder, pca_n=20, k_nn=5, custom_cond):
         tst_custom_ind = tst_custom_ind & (ch==custom_cond["tst_ch"])
     if custom_cond["tst_rep"]>0:
         tst_custom_ind = tst_custom_ind & (rep==custom_cond["tst_rep"])
+
+    # if channel is not only speech: remove actor 18th who does not sing!
+    if custom_cond["tr_ch"] != 1:
+        tr_custom_ind = tr_custom_ind & (actors != 18)
+    if custom_cond["tst_ch"] != 1:
+        tst_custom_ind = tst_custom_ind & (actors != 18)
 
     y = np.array(emotions,(-1))
     unique_actors = np.unique(actors)
@@ -120,8 +127,8 @@ if __name__=='__main__':
         parser.add_argument('--tr_ch', type=int, default='0', help='channel number in training set (1 speech, 2 singing)')
         parser.add_argument('--tr_rep', type=int, default='0', help='number of repetitions in training set')
         parser.add_argument('--tst_intensity', type=int, default='0', help='channel number in testing set (1 speech, 2 singing)')
-        parser.add_argument('--tst_ch', type=int, default='0', help='channel number in testing set (1 speech, 2 singing)')
-        parser.add_argument('--tst_rep', type=int, default='./0', help='output folder')
+        parser.add_argument('--tst_ch', type=int, default='1', help='channel number in testing set (1 speech, 2 singing)')
+        parser.add_argument('--tst_rep', type=int, default='0', help='output folder')
         args = parser.parse_args()
         custom_cond = {
             "tr_intensity" : args.tr_intensity,
@@ -131,4 +138,9 @@ if __name__=='__main__':
             "tst_ch": args.tst_ch,
             "tst_rep": args.tst_rep,
         }
+        if custom_cond["tst_ch"] != 1:
+            raise Exception("Sorry, test set cannot have singing samples as not all emotions are covered")
+        if custom_cond["tr_ch"] != 1:
+            raise Exception("Sorry, test set cannot have singing samples as not all emotions are covered")
+
         run_analyse(Path(args.input), Path(args.out), custom_cond)

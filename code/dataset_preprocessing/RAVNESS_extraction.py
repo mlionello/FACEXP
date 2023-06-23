@@ -20,6 +20,7 @@ def get_dataset(inpath, outfolder, refh5):
     file_ids = []
     features = []
     labels = []
+    collet_neutrals = []
     for j, fileh5 in enumerate(inpath.glob("*.h5")):
         print(str(j), end='\r')
         with h5py.File(fileh5) as data_in:
@@ -27,10 +28,16 @@ def get_dataset(inpath, outfolder, refh5):
             labels.append([int(val) for val in data_row])
             file_ids.append('/'.join(fileh5.parts[-2:]))
             features.append(pdist(np.mean(data_in["v"], 0)) - pdist_rest)
+            if data_row[0] == '01':
+                collet_neutrals.append(np.mean(data_in["v"], 0))
 
+    collet_neutrals = np.array(collet_neutrals)
+    neutral_ref = np.mean(collet_neutrals, 0)
     labels = {"file_ids": file_ids, "labels": labels, "column_names": column_names}
-    np.save( outfolder / 'features', features)
-    np.save( outfolder / 'labels', labels)
+    np.save(outfolder / 'neutrals_ref', neutral_ref)
+    np.save(outfolder / 'neutrals', collet_neutrals)
+    np.save(outfolder / 'features', features)
+    np.save(outfolder / 'labels', labels)
 
 
 if __name__ == '__main__':
