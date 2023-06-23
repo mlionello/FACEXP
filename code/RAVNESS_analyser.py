@@ -113,7 +113,7 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
         "preds": preds,
         "scorestot": scorestot,
         "k": k_nn,
-        "pca_n" : pca_n,
+        "pca_n": pca_n,
     }
     scores.update(custom_cond)
 
