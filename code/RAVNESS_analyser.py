@@ -35,8 +35,11 @@ ch = labels[:, ch_col_ind]
 intensity = labels[:, int_col_ind]
 sttm = labels[:, sttm_col_ind]
 mod = labels[:, mod_col_ind]
+
+valid_indices = (mod == 2) & (actors != 18)
+
 print("emotions")
-[print(len(np.where(emotions[~(intensity==1)]==em)[0]), end=' ') for em in np.unique(emotions)]
+[print(len(np.where(emotions[valid_indices]==em)[0]), end=' ') for em in np.unique(emotions)]
 
 print("actors")
 [print(len(np.where(actors==em)[0]), end=' ') for em in np.unique(actors)]
