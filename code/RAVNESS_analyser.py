@@ -8,7 +8,7 @@ from sklearn.neighbors import KNeighborsClassifier as knnc
 
 from sklearn.decomposition import PCA
 
-def run_analyse(pathfolder, pca_n=20, k_nn=5):
+def run_analyse(pathfolder, pca_n=20, k_nn=5, custom_cond):
     features_path = pathfolder / "features.npy"
     labels_path = pathfolder / "labels.npy"
 
@@ -41,7 +41,18 @@ def run_analyse(pathfolder, pca_n=20, k_nn=5):
 
     tr_custom_ind = [True]*labels.shape[0]
     tst_custom_ind = [True]*labels.shape[0]
-    tr_custom_ind = tr_custom_ind &
+    if custom_cond["tr_intensity"]>0:
+        tr_custom_ind = tr_custom_ind & (intensity==custom_cond["tr_intensity"])
+    if custom_cond["tr_ch"]>0:
+        tr_custom_ind = tr_custom_ind & (ch==custom_cond["tr_ch"])
+    if custom_cond["tr_rep"]>0:
+        tr_custom_ind = tr_custom_ind & (rep==custom_cond["tr_rep"])
+    if custom_cond["tst_intensity"]>0:
+        tst_custom_ind = tst_custom_ind & (intensity==custom_cond["tst_intensity"])
+    if custom_cond["tst_ch"]>0:
+        tst_custom_ind = tst_custom_ind & (ch==custom_cond["tst_ch"])
+    if custom_cond["tst_rep"]>0:
+        tst_custom_ind = tst_custom_ind & (rep==custom_cond["tst_rep"])
 
     y = np.array(emotions,(-1))
     unique_actors = np.unique(actors)
@@ -54,7 +65,7 @@ def run_analyse(pathfolder, pca_n=20, k_nn=5):
         actor_target_indices = (actors == actor_ind)
         training_indices = ~actor_target_indices & valid_indices & tr_custom_ind
         test_indices = actor_target_indices & valid_indices & tst_custom_ind
-        test_indices = test_indices & (ch == 2) & (intensity == 2)
+
         pca = PCA(n_components = pca_n)
         pca.fit(X[training_indices, :])
         X_pca = pca.transform(X)
