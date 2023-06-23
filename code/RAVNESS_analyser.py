@@ -28,6 +28,17 @@ int_col_ind = np.where([a == "Intensity" for a in labels_ids])[0][0]
 sttm_col_ind = np.where([a == "Statement" for a in labels_ids])[0][0]
 mod_col_ind = np.where([a == "Modality" for a in labels_ids])[0][0]
 
+print(f"em_col_ind {len(em_col_ind)}")
+print(f"actor_col_ind {len(actor_col_ind)}")
+print(f"rep_col_ind {len(rep_col_ind)}")
+print(f"ch_col_ind {len(ch_col_ind)}")
+print(f"int_col_ind {len(int_col_ind)}")
+print(f"sttm_col_ind {len(sttm_col_ind)}")
+print(f"mod_col_ind {len(mod_col_ind)}")
+print(f"labels shape {labels.shape}")
+
+
+
 emotions = labels[:, em_col_ind]
 actors = labels[:, actor_col_ind]
 rep = labels[:, rep_col_ind]
@@ -40,7 +51,7 @@ y = np.reshape(emotions, (-1,))
 
 valid_indices = (mod == 2) & (actors != 18)
 valid_indices = valid_indices & (emotions > 2)
-valid_indices = valid_indices & (rep == 2)
+#valid_indices = valid_indices & (rep == 2)
 #valid_indices = valid_indices & (intensity == 2)
 
 unique_actors = np.unique(actors)
