@@ -36,7 +36,7 @@ intensity = labels[:, int_col_ind]
 sttm = labels[:, sttm_col_ind]
 mod = labels[:, mod_col_ind]
 print("emotions")
-[print(len(np.where(emotions[~(intensity==2)]==em)[0]), end=' ') for em in np.unique(emotions)]
+[print(len(np.where(emotions[~(intensity==1)]==em)[0]), end=' ') for em in np.unique(emotions)]
 
 print("actors")
 [print(len(np.where(actors==em)[0]), end=' ') for em in np.unique(actors)]
