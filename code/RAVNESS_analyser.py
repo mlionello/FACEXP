@@ -140,7 +140,7 @@ if __name__=='__main__':
         }
         if custom_cond["tst_ch"] != 1:
             raise Exception("Sorry, test set cannot have singing samples as not all emotions are covered")
-        if custom_cond["tr_ch"] != 1:
-            raise Exception("Sorry, test set cannot have singing samples as not all emotions are covered")
+        if custom_cond["tr_ch"] == 1:
+            raise Exception("Sorry, training set cannot have only singing samples, which do not cover all the emotions")
 
         run_analyse(Path(args.input), Path(args.out), custom_cond)
