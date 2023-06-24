@@ -8,8 +8,9 @@ for tr_ch in [0, 1]:
       for tst_intensity in [0, 1]:
         for tr_intensity in [0, 1]:
 
-            outputid=f"trch_{tr_ch}_trrep_{tr_rep}_trintensity_{tr_intensity}_tstrep_{tst_rep}_tstintensity_{tst_intensity}"
-
+            outputid = f"trch_{tr_ch}_trrep_{tr_rep}_trintensity_{tr_intensity}_tstrep_{tst_rep}_tstintensity_{tst_intensity}"
+            inputdir = Path("/home/matteo/Documents/code/FACEXP/facexp_models/scripts/run_RAVNESS_analysis.py")
+            outputid = inputdir / outputid
             custom_cond = {
                 "tr_intensity": tr_intensity,
                 "tr_ch": tr_ch,
@@ -19,6 +20,6 @@ for tr_ch in [0, 1]:
                 "tst_rep": tst_rep,
             }
 
-            run_analyse(Path('home/matteo.lionello/RAVNESS/pdist_ownref/'),
-                        Path(outputid),
+            run_analyse(inputdir,
+                        outputid,
                         custom_cond)
