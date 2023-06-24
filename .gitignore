@@ -1,3 +1,7 @@
-samplevideo/PEDFE/PEDFE_set_clips/**
+samplevideo/*/*
 *.zip
 *.h5
+*.npy
+*.avi
+*.mp4
+*.tar.gz
