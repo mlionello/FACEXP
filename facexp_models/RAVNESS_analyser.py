@@ -60,7 +60,7 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     if custom_cond["tst_ch"] != 1:
         tst_custom_ind = tst_custom_ind & (actors != 18)
 
-    y = np.array(emotions,(-1,))
+    y = np.reshape(emotions, (-1,))
     unique_actors = np.unique(actors)
     training_score = []
     test_score = []
