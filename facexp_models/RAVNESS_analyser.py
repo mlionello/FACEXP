@@ -15,6 +15,7 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     labels_init = np.load(labels_path, allow_pickle=True)
 
     print(f"total number of subjects: {X.shape[0]}")
+    print(custom_cond)
 
     labels_ids = labels_init[()]["column_names"]
     labels = labels_init[()]['labels']
@@ -77,7 +78,6 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
         X_pca = pca.transform(X)
 
         y_test = y[test_indices]
-        print(f"{y_test} {np.unique(y_test)}")
         X_test = X_pca[test_indices, :]
         y_training = y[training_indices]
         X_training = X_pca[training_indices, :]
