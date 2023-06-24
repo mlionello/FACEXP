@@ -1,5 +1,10 @@
 import numpy as np
-from sklearn.model_selection import KFold, StratifiedKFold, StratifiedShuffleSplit, cross_validate
+from sklearn.model_selection import (
+    KFold,
+    StratifiedKFold,
+    StratifiedShuffleSplit,
+    cross_validate,
+)
 from sklearn.neighbors import KNeighborsClassifier as knnc
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
@@ -21,10 +26,10 @@ print(f"total number of subjects: {X.shape[0]}")
 pca = PCA(n_components=20)
 X = pca.fit_transform(X)
 
-posed_indices = np.where(labels[:, 3] == 'Posed')[0]
+posed_indices = np.where(labels[:, 3] == "Posed")[0]
 Xp = X[posed_indices, :]
 yp = labels[posed_indices, 4]
-genuine_indices = np.where(labels[:, 3] == 'Genuine')[0]
+genuine_indices = np.where(labels[:, 3] == "Genuine")[0]
 Xg = X[genuine_indices, :]
 yg = labels[genuine_indices, 4]
 
@@ -35,28 +40,33 @@ y = np.reshape(emo_id, (-1,))
 cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
 model = knnc(n_neighbors=3)
 
-
 scoresp = cross_validate(model, Xp, yp, cv=cv, return_train_score=True)
-print(f"Posed: tr: {np.mean(scoresp['train_score']):.3f} +/- {np.std(scoresp['train_score']):.3f};"
-      f"  tst: {np.mean(scoresp['test_score'])} +/- {np.std(scoresp['test_score'])}")
+print(
+    f"Posed: tr: {np.mean(scoresp['train_score']):.3f} +/- {np.std(scoresp['train_score']):.3f};"
+    f"  tst: {np.mean(scoresp['test_score'])} +/- {np.std(scoresp['test_score'])}"
+)
 scoresg = cross_validate(model, Xg, yg, cv=cv, return_train_score=True)
-print(f"Genuine: tr: {np.mean(scoresg['train_score']):.3f} +/- {np.std(scoresg['train_score']):.3f};"
-      f"  tst: {np.mean(scoresg['test_score'])} +/- {np.std(scoresg['test_score'])}")
+print(
+    f"Genuine: tr: {np.mean(scoresg['train_score']):.3f} +/- {np.std(scoresg['train_score']):.3f};"
+    f"  tst: {np.mean(scoresg['test_score'])} +/- {np.std(scoresg['test_score'])}"
+)
 scorestot = cross_validate(model, X, y, cv=cv, return_train_score=True)
-print(f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
-      f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}")
+print(
+    f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
+    f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}"
+)
 
 pltscore = []
 for k in range(5, X.shape[1]):
     cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
-    scores = cross_validate(model, X[:, : k], y, cv=cv, return_train_score=True)
+    scores = cross_validate(model, X[:, :k], y, cv=cv, return_train_score=True)
     pltscore.append([np.mean(scores["test_score"]), np.mean(scores["train_score"])])
 pltscore = np.array(pltscore)
-plt.plot(pltscore[:, 0], label='test')
-plt.plot(pltscore[:, 1], label='train')
+plt.plot(pltscore[:, 0], label="test")
+plt.plot(pltscore[:, 1], label="train")
 
 plt.legend()
-plt.savefig('features_allsamples.png')
+plt.savefig("features_allsamples.png")
 
 # predicted_classes = []
 # actual_classes = []

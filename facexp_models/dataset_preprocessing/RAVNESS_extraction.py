@@ -1,16 +1,23 @@
 import argparse
 import os
-
 from pathlib import Path
 import h5py
 from scipy.spatial.distance import pdist
 import numpy as np
 
+
 def get_dataset(inpath, outfolder, refh5):
     if not outfolder.is_dir():
         os.mkdir(outfolder)
-    column_names = ["Modality", "Channel", "Emotion", "Intensity",
-                    "Statement", "Repetition", "Actor"]
+    column_names = [
+        "Modality",
+        "Channel",
+        "Emotion",
+        "Intensity",
+        "Statement",
+        "Repetition",
+        "Actor",
+    ]
     print("available entries: ", column_names)
 
     meshatrest = np.load(refh5)
@@ -22,28 +29,32 @@ def get_dataset(inpath, outfolder, refh5):
     labels = []
     collet_neutrals = []
     for j, fileh5 in enumerate(inpath.glob("*.h5")):
-        print(str(j), end='\r')
+        print(str(j), end="\r")
         with h5py.File(fileh5) as data_in:
-            data_row = fileh5.stem.split('-')
+            data_row = fileh5.stem.split("-")
             labels.append([int(val) for val in data_row])
-            file_ids.append('/'.join(fileh5.parts[-2:]))
+            file_ids.append("/".join(fileh5.parts[-2:]))
             features.append(pdist(np.mean(data_in["v"], 0)) - pdist_rest)
-            if data_row[2] == '01':
+            if data_row[2] == "01":
                 collet_neutrals.append(np.mean(data_in["v"], 0))
 
     collet_neutrals = np.array(collet_neutrals)
     neutral_ref = np.mean(collet_neutrals, 0)
     labels = {"file_ids": file_ids, "labels": labels, "column_names": column_names}
-    np.save(outfolder / 'neutrals_ref', neutral_ref)
-    np.save(outfolder / 'neutrals', collet_neutrals)
-    np.save(outfolder / 'features', features)
-    np.save(outfolder / 'labels', labels)
+    np.save(outfolder / "neutrals_ref", neutral_ref)
+    np.save(outfolder / "neutrals", collet_neutrals)
+    np.save(outfolder / "features", features)
+    np.save(outfolder / "labels", labels)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='h5 to dataframes and npy for features and labels')
-    parser.add_argument('--input', type=str, help='input_folder')
-    parser.add_argument('--ref', type=str, default='./refAtRest.npy', help='ref h5 template at rest')
-    parser.add_argument('--out', type=str, default='./', help='output folder')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="h5 to dataframes and npy for features and labels"
+    )
+    parser.add_argument("--input", type=str, help="input_folder")
+    parser.add_argument(
+        "--ref", type=str, default="./refAtRest.npy", help="ref h5 template at rest"
+    )
+    parser.add_argument("--out", type=str, default="./", help="output folder")
     args = parser.parse_args()
     get_dataset(Path(args.input), Path(args.out), Path(args.ref))
