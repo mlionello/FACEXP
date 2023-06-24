@@ -2,11 +2,9 @@ import argparse
 import os
 import pickle
 from pathlib import Path
-
 import numpy as np
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.neighbors import KNeighborsClassifier as knnc
-
 from sklearn.decomposition import PCA
 
 def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
@@ -47,13 +45,13 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
         tr_custom_ind = tr_custom_ind & (intensity==custom_cond["tr_intensity"])
     if custom_cond["tr_ch"]>0:
         tr_custom_ind = tr_custom_ind & (ch==custom_cond["tr_ch"])
-    CHECK! if custom_cond["tr_rep"]>0:
+    if custom_cond["tr_rep"]>0:
         tr_custom_ind = tr_custom_ind & (rep==custom_cond["tr_rep"])
     if custom_cond["tst_intensity"]>0:
         tst_custom_ind = tst_custom_ind & (intensity==custom_cond["tst_intensity"])
     if custom_cond["tst_ch"]>0:
         tst_custom_ind = tst_custom_ind & (ch==custom_cond["tst_ch"])
-    CHECK! if custom_cond["tst_rep"]>0:
+    if custom_cond["tst_rep"]>0:
         tst_custom_ind = tst_custom_ind & (rep==custom_cond["tst_rep"])
 
     # if channel is not only speech: remove actor 18th who does not sing!
