@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from facexp_models.RAVNESS_analyser import run_analyse
 
 for tr_ch in [0, 1]:

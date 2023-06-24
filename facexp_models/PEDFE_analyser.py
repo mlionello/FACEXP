@@ -13,6 +13,39 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import FastICA
 from sklearn.decomposition import PCA
 
+
+def get_cv_results(X, y):
+    confused_mat = []
+    scores = []
+    pca = PCA(n_components=20)
+    model = knnc(n_neighbors=5)
+    cv = StratifiedKFold(n_splits=20, random_state=0, shuffle=True)
+    for train_ndx, test_ndx in cv.split(X, y):
+        train_X, train_y, test_X, test_y = (
+            X[train_ndx],
+            y[train_ndx],
+            X[test_ndx],
+            y[test_ndx],
+        )
+        train_X = pca.fit_transform(train_X)
+        test_X = pca.transform(test_X)
+        model.fit(train_X, train_y)
+        y_tr_pred = model.predict(train_X)
+        y_tst_pred = model.predict(test_X)
+
+        score_tr = np.sum(y_tr_pred == train_y) / len(train_y)
+        score_tst = np.sum(y_tst_pred == test_y) / len(test_y)
+        cm = confusion_matrix(test_y, y_tst_pred)
+
+        scores.append([score_tr, score_tst])
+        confused_mat.append(cm)
+
+    scores = np.array(scores)
+    confused_mat = np.array(confused_mat)
+    mean_cm = np.mean(confused_mat, axis=0)
+    mean_scores = np.mean(scores, axis=1)
+    return {"scores": scores, "conf_matrices": confused_mat, "mean_cm": mean_cm, "mean_scores": mean_scores}
+
 features_path = "./features.npy"
 labels_path = "./labels.npy"
 
@@ -23,44 +56,46 @@ X = X[hit_rate, :]
 labels = labels[hit_rate, :]
 print(f"total number of subjects: {X.shape[0]}")
 
-pca = PCA(n_components=20)
-X = pca.fit_transform(X)
-
-posed_indices = np.where(labels[:, 3] == "Posed")[0]
-Xp = X[posed_indices, :]
-yp = labels[posed_indices, 4]
-genuine_indices = np.where(labels[:, 3] == "Genuine")[0]
-Xg = X[genuine_indices, :]
-yg = labels[genuine_indices, 4]
-
 emo_id = labels[:, 4]
 emo_id = [str(a) for a in emo_id]
 y = np.reshape(emo_id, (-1,))
 
-cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
-model = knnc(n_neighbors=3)
+posed_indices = labels[:, 3] == "Posed"
+Xp = X[posed_indices, :]
+yp = y[posed_indices]
+genuine_indices = labels[:, 3] == "Genuine"
+Xg = X[genuine_indices, :]
+yg = y[genuine_indices]
 
-scoresp = cross_validate(model, Xp, yp, cv=cv, return_train_score=True)
+# Overall results
+pca = PCA(n_components=20)
+model = knnc(n_neighbors=5)
+cv = StratifiedKFold(n_splits=20, random_state=0, shuffle=True)
+Xp_pca = pca.fit_transform(Xp)
+Xg_pca = pca.fit_transform(Xg)
+Xall_pca = pca.fit_transform(X)
+scoresp = cross_validate(model, Xp_pca, yp, cv=cv, return_train_score=True)
 print(
     f"Posed: tr: {np.mean(scoresp['train_score']):.3f} +/- {np.std(scoresp['train_score']):.3f};"
-    f"  tst: {np.mean(scoresp['test_score'])} +/- {np.std(scoresp['test_score'])}"
+    f"  tst: {np.mean(scoresp['test_score']):.3f} +/- {np.std(scoresp['test_score']):.3f}"
 )
-scoresg = cross_validate(model, Xg, yg, cv=cv, return_train_score=True)
+scoresg = cross_validate(model, Xg_pca, yg, cv=cv, return_train_score=True)
 print(
     f"Genuine: tr: {np.mean(scoresg['train_score']):.3f} +/- {np.std(scoresg['train_score']):.3f};"
-    f"  tst: {np.mean(scoresg['test_score'])} +/- {np.std(scoresg['test_score'])}"
+    f"  tst: {np.mean(scoresg['test_score']):.3f} +/- {np.std(scoresg['test_score']):.3f}"
 )
-scorestot = cross_validate(model, X, y, cv=cv, return_train_score=True)
+scorestot = cross_validate(model, Xall_pca, y, cv=cv, return_train_score=True)
 print(
     f"Whole: tr: {np.mean(scorestot['train_score']):.3f} +/- {np.std(scorestot['train_score']):.3f};"
-    f"  tst: {np.mean(scorestot['test_score'])} +/- {np.std(scorestot['test_score'])}"
+    f"  tst: {np.mean(scorestot['test_score']):.3f} +/- {np.std(scorestot['test_score']):.3f}"
 )
 
+for x_data, y_data in [[Xp, yp], [Xg, yg], [X, y]]:
+    get_sample_increase( x_data, y_data)
+    get_hitrate_decrease(x_data, y_data)
+
 pltscore = []
-for k in range(5, X.shape[1]):
-    cv = StratifiedKFold(n_splits=10, random_state=0, shuffle=True)
-    scores = cross_validate(model, X[:, :k], y, cv=cv, return_train_score=True)
-    pltscore.append([np.mean(scores["test_score"]), np.mean(scores["train_score"])])
+
 pltscore = np.array(pltscore)
 plt.plot(pltscore[:, 0], label="test")
 plt.plot(pltscore[:, 1], label="train")
