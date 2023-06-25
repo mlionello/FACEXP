@@ -14,6 +14,29 @@ from sklearn.decomposition import FastICA
 from sklearn.decomposition import PCA
 
 
+def get_sample_increase_models(X, y):
+    score = []
+    for k in range(50, X.shape[0], 50):
+        score_k = get_cv_results(X[:k, :], y)
+        score.append(score_k)
+    plt.plot(pltscore[:, 0], label="test")
+    plt.plot(pltscore[:, 1], label="train")
+
+    plt.legend()
+    plt.savefig("features_allsamples.png")
+
+def get_hitrate_decrease_models(X, y, hr_scores):
+    score = []
+    for k in range(50, X.shape[0], 50):
+        score_k = get_cv_results(X[:k, :], y)
+        score.append(score_k)
+    plt.plot(pltscore[:, 0], label="test")
+    plt.plot(pltscore[:, 1], label="train")
+
+    plt.legend()
+    plt.savefig("features_allsamples.png")
+
+
 def get_cv_results(X, y):
     confused_mat = []
     scores = []
@@ -44,16 +67,20 @@ def get_cv_results(X, y):
     confused_mat = np.array(confused_mat)
     mean_cm = np.mean(confused_mat, axis=0)
     mean_scores = np.mean(scores, axis=1)
-    return {"scores": scores, "conf_matrices": confused_mat, "mean_cm": mean_cm, "mean_scores": mean_scores}
+    return {
+        "scores": scores,
+        "conf_matrices": confused_mat,
+        "mean_cm": mean_cm,
+        "mean_scores": mean_scores,
+    }
+
 
 features_path = "./features.npy"
 labels_path = "./labels.npy"
 
 X = np.load(features_path, allow_pickle=True)
 labels = np.load(labels_path, allow_pickle=True)
-hit_rate = np.where(labels[:, 5] > 70)[0]
-X = X[hit_rate, :]
-labels = labels[hit_rate, :]
+hr_scores = np.array(labels[:, 5])
 print(f"total number of subjects: {X.shape[0]}")
 
 emo_id = labels[:, 4]
@@ -91,17 +118,8 @@ print(
 )
 
 for x_data, y_data in [[Xp, yp], [Xg, yg], [X, y]]:
-    get_sample_increase( x_data, y_data)
-    get_hitrate_decrease(x_data, y_data)
-
-pltscore = []
-
-pltscore = np.array(pltscore)
-plt.plot(pltscore[:, 0], label="test")
-plt.plot(pltscore[:, 1], label="train")
-
-plt.legend()
-plt.savefig("features_allsamples.png")
+    get_sample_increase(x_data, y_data)
+    get_hitrate_decrease(x_data, y_data, hr_scores)
 
 # predicted_classes = []
 # actual_classes = []
