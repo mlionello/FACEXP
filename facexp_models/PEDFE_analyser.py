@@ -10,58 +10,91 @@ from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
-from sklearn.decomposition import FastICA
 from sklearn.decomposition import PCA
 
 
-def get_sample_increase_models(X, y):
+def get_sample_increase_models(X, y, outfile):
     score = []
-    for k in range(50, X.shape[0], 50):
-        score_k = get_cv_results(X[:k, :], y)
+    cv = StratifiedKFold(n_splits=20, random_state=0, shuffle=True)
+    train_indx, test_indx = next(cv.split(X, y))
+    for k in range(50, np.sum(train_indx), 10):
+        score_k = get_cv_results(X, y, train_indx, test_indx, fixed_test=True)
         score.append(score_k)
-    plt.plot(pltscore[:, 0], label="test")
-    plt.plot(pltscore[:, 1], label="train")
+    score = np.array(score)
+    plt.plot(score[:, 0], label="test")
+    plt.plot(score[:, 1], label="train")
 
     plt.legend()
-    plt.savefig("features_allsamples.png")
+    plt.savefig(outfile)
+    return score
 
-def get_hitrate_decrease_models(X, y, hr_scores):
+
+def get_hitrate_decrease_models(X, y, hr_scores, outfile):
     score = []
-    for k in range(50, X.shape[0], 50):
-        score_k = get_cv_results(X[:k, :], y)
+    for k in range(90, 0, -5):
+        hr_target_indices = hr_scores >= k
+        score_k = get_cv_results(X[hr_target_indices, :], y[hr_target_indices])
         score.append(score_k)
-    plt.plot(pltscore[:, 0], label="test")
-    plt.plot(pltscore[:, 1], label="train")
+    score = np.array(score)
+    plt.plot(score[:, 0], label="test")
+    plt.plot(score[:, 1], label="train")
 
     plt.legend()
-    plt.savefig("features_allsamples.png")
+    plt.savefig(outfile)
+    return score
 
 
-def get_cv_results(X, y):
+def get_cv_results(X, y, train_indx, test_indx, fixed_test=False):
+    n_pca = 20
+    n_folds = 20
+    k_nn = 5
     confused_mat = []
     scores = []
-    pca = PCA(n_components=20)
-    model = knnc(n_neighbors=5)
-    cv = StratifiedKFold(n_splits=20, random_state=0, shuffle=True)
-    for train_ndx, test_ndx in cv.split(X, y):
-        train_X, train_y, test_X, test_y = (
-            X[train_ndx],
-            y[train_ndx],
-            X[test_ndx],
-            y[test_ndx],
+    model = knnc(n_neighbors=k_nn)
+    if ~fixed_test:
+        cv = StratifiedKFold(n_splits=n_folds, random_state=0, shuffle=True)
+        pca = PCA(n_components=n_pca)
+        for train_ndx, test_ndx in cv.split(X, y):
+            train_X, train_y, test_X, test_y = (
+                X[train_ndx],
+                y[train_ndx],
+                X[test_ndx],
+                y[test_ndx],
+            )
+            train_X = pca.fit_transform(train_X)
+            test_X = pca.transform(test_X)
+            model.fit(train_X, train_y)
+            y_tr_pred = model.predict(train_X)
+            y_tst_pred = model.predict(test_X)
+
+            score_tr = np.sum(y_tr_pred == train_y) / len(train_y)
+            score_tst = np.sum(y_tst_pred == test_y) / len(test_y)
+            cm = confusion_matrix(test_y, y_tst_pred)
+
+            scores.append([score_tr, score_tst])
+            confused_mat.append(cm)
+    elif fixed_test:
+        train_indx = train_indx[: int(len(train_indx) / n_folds) * n_folds]
+        pca = PCA(n_components=n_pca)
+        pca.fit(X[train_indx, :])
+        X_test = pca.transform(X[test_indx, :])
+        y_test = y[test_indx]
+        tr_set_fold = np.random.choice(
+            train_indx, (int(len(train_indx) / n_folds), n_folds), replace=False
         )
-        train_X = pca.fit_transform(train_X)
-        test_X = pca.transform(test_X)
-        model.fit(train_X, train_y)
-        y_tr_pred = model.predict(train_X)
-        y_tst_pred = model.predict(test_X)
+        for train_indx_fold in range(tr_set_fold.shape[0]):
+            X_train = X[tr_set_fold, :]
+            y_train = y[train_indx_fold]
+            model.fit(X_train, y_train)
+            y_tr_pred = model.predict(X_train)
+            y_tst_pred = model.predict(X_test)
 
-        score_tr = np.sum(y_tr_pred == train_y) / len(train_y)
-        score_tst = np.sum(y_tst_pred == test_y) / len(test_y)
-        cm = confusion_matrix(test_y, y_tst_pred)
+            score_tr = np.sum(y_tr_pred == y_train) / len(y_train)
+            score_tst = np.sum(y_tst_pred == y_test) / len(y_test)
+            cm = confusion_matrix(y_test, y_tst_pred)
 
-        scores.append([score_tr, score_tst])
-        confused_mat.append(cm)
+            scores.append([score_tr, score_tst])
+            confused_mat.append(cm)
 
     scores = np.array(scores)
     confused_mat = np.array(confused_mat)
@@ -120,23 +153,3 @@ print(
 for x_data, y_data in [[Xp, yp], [Xg, yg], [X, y]]:
     get_sample_increase(x_data, y_data)
     get_hitrate_decrease(x_data, y_data, hr_scores)
-
-# predicted_classes = []
-# actual_classes = []
-# matrix = 0
-# for train_ndx, test_ndx in cv.split(X, y):
-#     model = knnc(n_neighbors=5)
-#     train_X, train_y, test_X, test_y = X[train_ndx], y[train_ndx], X[test_ndx], y[test_ndx]
-#
-#     model.fit(train_X, train_y)
-#     predicted_classes = model.predict(test_X)
-#     cm = confusion_matrix(test_y, predicted_classes, labels=model.classes_)
-#     matrix = matrix + cm
-#     print(cm)
-#     print(np.sum(np.diag(cm))/np.sum(cm))
-#
-# print(matrix)
-# print(np.sum(np.diag(matrix))/np.sum(matrix))
-# disp = ConfusionMatrixDisplay(confusion_matrix=matrix, display_labels=model.classes_)
-# disp.plot()
-# plt.show()
