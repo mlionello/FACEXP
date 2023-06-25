@@ -51,7 +51,7 @@ def get_cv_results(X, y, train_indx, test_indx, fixed_test=False):
     confused_mat = []
     scores = []
     model = knnc(n_neighbors=k_nn)
-    if ~fixed_test:
+    if not fixed_test:
         cv = StratifiedKFold(n_splits=n_folds, random_state=0, shuffle=True)
         pca = PCA(n_components=n_pca)
         for train_ndx, test_ndx in cv.split(X, y):
@@ -77,14 +77,15 @@ def get_cv_results(X, y, train_indx, test_indx, fixed_test=False):
         train_indx = train_indx[: int(len(train_indx) / n_folds) * n_folds]
         pca = PCA(n_components=n_pca)
         pca.fit(X[train_indx, :])
-        X_test = pca.transform(X[test_indx, :])
+        X_pca =  pca.transform(X)
+        X_test = X_pca[test_indx, :]
         y_test = y[test_indx]
         tr_set_fold = np.random.choice(
             train_indx, (int(len(train_indx) / n_folds), n_folds), replace=False
         )
         for train_indx_fold in range(tr_set_fold.shape[0]):
-            X_train = X[tr_set_fold, :]
-            y_train = y[train_indx_fold]
+            X_train = X_pca[tr_set_fold[train_indx_fold,:], :]
+            y_train = y[tr_set_fold[train_indx_fold,:]]
             model.fit(X_train, y_train)
             y_tr_pred = model.predict(X_train)
             y_tst_pred = model.predict(X_test)
@@ -108,8 +109,8 @@ def get_cv_results(X, y, train_indx, test_indx, fixed_test=False):
     }
 
 
-features_path = "./features.npy"
-labels_path = "./labels.npy"
+features_path = "../mediapipe/PEDFE/features.npy"
+labels_path = "../mediapipe/PEDFE/labels.npy"
 
 X = np.load(features_path, allow_pickle=True)
 labels = np.load(labels_path, allow_pickle=True)
@@ -129,7 +130,7 @@ yg = y[genuine_indices]
 
 # Overall results
 pca = PCA(n_components=20)
-model = knnc(n_neighbors=5)
+model = knnc(n_neighbors=1)
 cv = StratifiedKFold(n_splits=20, random_state=0, shuffle=True)
 Xp_pca = pca.fit_transform(Xp)
 Xg_pca = pca.fit_transform(Xg)
@@ -151,5 +152,5 @@ print(
 )
 
 for x_data, y_data in [[Xp, yp], [Xg, yg], [X, y]]:
-    get_sample_increase(x_data, y_data)
-    get_hitrate_decrease(x_data, y_data, hr_scores)
+    get_sample_increase_models(x_data, y_data, 'output')
+    get_hitrate_decrease_models(x_data, y_data, hr_scores, 'output')

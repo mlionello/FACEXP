@@ -43,5 +43,5 @@ for x in file_ids:
 
 valid_data = data.iloc[np.reshape(valid_data_indices, -1)].reset_index(drop=True)
 
-np.save("features_max", features)
-np.save("labels_max", valid_data)
+np.save("features", features)
+np.save("labels", valid_data)
