@@ -306,28 +306,30 @@ with open(f"overall_model_knn_{k_nn}_nfolds_{n_folds}_pca_20.txt", "a") as tofil
     print(msg)
 
 # debug=True
-for j, indxs in enumerate([posed_indices, genuine_indices, [True] * len(y)]):
-    outputdir = Path(
-        f"output_{['posed', 'genuine', 'all'][j]}_nfolds{n_folds}_knn{k_nn}"
-    )
-    if not outputdir.is_dir():
-        os.mkdir(outputdir)
+from multiprocessing import Pool, TimeoutError
+with Pool(processes=12) as pool:
+    for j, indxs in enumerate([posed_indices, genuine_indices, [True] * len(y)]):
+        outputdir = Path(
+            f"output_{['posed', 'genuine', 'all'][j]}_nfolds{n_folds}_knn{k_nn}"
+        )
+        if not outputdir.is_dir():
+            os.mkdir(outputdir)
 
-    get_sample_increase_models(
-        X[indxs, :],
-        y[indxs],
-        outputdir,
-        n_pca=20,
-        n_folds=n_folds,
-        k_nn=k_nn
-    )
+        get_sample_increase_models(
+            X[indxs, :],
+            y[indxs],
+            outputdir,
+            n_pca=20,
+            n_folds=n_folds,
+            k_nn=k_nn
+        )
 
-    get_hitrate_decrease_models(
-        X[indxs, :],
-        y[indxs],
-        hr_scores[indxs],
-        outputdir,
-        n_pca=20,
-        n_folds=n_folds,
-        k_nn=k_nn
-    )
+        get_hitrate_decrease_models(
+            X[indxs, :],
+            y[indxs],
+            hr_scores[indxs],
+            outputdir,
+            n_pca=20,
+            n_folds=n_folds,
+            k_nn=k_nn
+        )
