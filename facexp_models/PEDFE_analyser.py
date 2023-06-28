@@ -1,7 +1,6 @@
 import os
 import pickle
 from pathlib import Path
-
 import numpy as np
 from sklearn.model_selection import (
     StratifiedKFold,
@@ -272,7 +271,7 @@ yg = y[genuine_indices]
 
 # Overall results
 n_folds = 10
-k_nn = 5
+k_nn = 1
 
 pca = PCA(n_components=20)
 model = knnc(n_neighbors=k_nn)
