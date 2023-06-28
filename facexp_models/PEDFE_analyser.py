@@ -271,8 +271,8 @@ Xg = X[genuine_indices, :]
 yg = y[genuine_indices]
 
 # Overall results
-n_folds = 20
-k_nn = 3
+n_folds = 10
+k_nn = 5
 
 pca = PCA(n_components=20)
 model = knnc(n_neighbors=k_nn)
