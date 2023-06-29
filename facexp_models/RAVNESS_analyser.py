@@ -75,6 +75,16 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     scores = cross_validate(model,X0, y[valid_indices], cv=cv, return_train_score=True)
     print(np.mean(scores["test_score"]))
     print(np.mean(scores["train_score"]))
+
+    unique_classes = np.unique(y)
+
+    for cls in unique_classes:
+        class_indices = np.where(y[valid_indices] == cls)[0]
+        class_test_scores = scores["test_score"][class_indices]
+        class_train_scores = scores["train_score"][class_indices]
+        print(f"Class {cls}:")
+        print(f"  Mean test score: {np.mean(class_test_scores)}")
+        print(f"  Mean train score: {np.mean(class_train_scores)}")
     return
 
     for actor_ind in unique_actors:
