@@ -70,16 +70,17 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
 
     pca = PCA(n_components=pca_n)
     X0 = pca.fit_transform(X[valid_indices, :])
+    y0 = y[valid_indices]
     model = knnc(n_neighbors=k_nn)
     cv = StratifiedKFold(10)
-    scores = cross_validate(model,X0, y[valid_indices], cv=cv, return_train_score=True)
+    scores = cross_validate(model,X0, y0, cv=cv, return_train_score=True)
     print(np.mean(scores["test_score"]))
     print(np.mean(scores["train_score"]))
 
-    unique_classes = np.unique(y[valid_indices])
+    unique_classes = np.unique(y0)
 
     for cls in unique_classes:
-        class_indices = np.where(y[valid_indices] == cls)[0]
+        class_indices = np.where(y0 == cls)[0]
         class_test_scores = scores["test_score"][class_indices]
         print(f"Class {cls}:")
         print(f"  Mean test score: {np.mean(class_test_scores)}")
