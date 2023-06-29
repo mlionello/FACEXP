@@ -20,4 +20,4 @@ with Pool(processes=8) as pool:
                             "tst_rep": tst_rep,
                         }
 
-                        run_analyse(inputdir, outputid, custom_cond)
+                        run_analyse(inputdir, outputid, custom_cond, k_nn=1)

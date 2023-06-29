@@ -5,15 +5,15 @@ from pathlib import Path
 
 trch = 0
 trrep = 0
-tstrep = 0
+tstrep = 1
 tstintensity = 0
 scores2plot = []
 column_names = []
 label = []
 for trch in [0, 1]:
-    for trintensity in [0, 1]:
+    for trintensity in [1, 2]:
         label.append(f"trch_{trch}-trintensity_{trintensity}")
-        filepath = Path(f'../results/ravdess_results/trch_{trch}_trrep_{trrep}_'
+        filepath = Path(f'../results/RAVDESS_results/trch_{trch}_trrep_{trrep}_'
                    f'trintensity_{trintensity}_tstrep_{tstrep}_tstintensity_{tstintensity}')
         with open(filepath / 'data.pkl', 'rb') as ofile:
             data = pickle.load(ofile)
@@ -29,7 +29,7 @@ for trch in [0, 1]:
 
 scores2plot=np.array(scores2plot)
 print(np.corrcoef(scores2plot))
-plt.scatter(scores2plot[1, :], scores2plot[3, :] )
+plt.scatter(scores2plot[1, :], scores2plot[0, :] )
 plt.show()
 plt.figure()
 plt.violinplot(scores2plot.transpose(), showextrema=False, showmeans=True)
