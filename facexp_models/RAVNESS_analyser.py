@@ -67,6 +67,16 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     training_score = []
     test_score = []
     preds = []
+
+    pca = PCA(n_components=pca_n)
+    X0 = pca.fit_transform(X[valid_indices, :])
+    model = knnc(n_neighbors=k_nn)
+    cv = StratifiedKFold(10)
+    scores = cross_validate(model,X0, y[valid_indices], cv=cv, return_train_score=True)
+    print(np.mean(scores["test_score"]))
+    print(np.mean(scores["train_score"]))
+    return
+
     for actor_ind in unique_actors:
         # if actor_ind == 18:
         #     continue
