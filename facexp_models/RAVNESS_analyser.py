@@ -73,7 +73,7 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     model = knnc(n_neighbors=k_nn)
     cv = StratifiedKFold(10)
     scores = cross_validate(model,X0, y[valid_indices], cv=cv, return_train_score=True, scoring="accuracy")
-    preds = cross_val_predict(model, X0, y[valid_indices], cv=cv, return_train_score=True, scoring="accuracy")
+    preds = cross_val_predict(model, X0, y[valid_indices], cv=cv)
     print(preds.shape)
     print(np.mean(scores["test_score"]))
     print(np.mean(scores["train_score"]))
