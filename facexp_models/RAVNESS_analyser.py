@@ -75,12 +75,13 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     scores = cross_validate(model,X0, y[valid_indices], cv=cv, return_train_score=True, scoring="accuracy")
     preds = cross_val_predict(model, X0, y[valid_indices], cv=cv)
     print(preds.shape)
+    print(y[valid_indices].shape)
     print(np.mean(scores["test_score"]))
     print(np.mean(scores["train_score"]))
 
     unique_classes = np.unique(y)
     print(unique_classes)
-    print(np.unique(scores["test_score"]))
+    print(np.unique(preds))
 
     for cls in unique_classes:
         class_indices = np.where(y[valid_indices] == cls)[0]
