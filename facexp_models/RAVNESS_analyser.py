@@ -76,7 +76,7 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     print(np.mean(scores["test_score"]))
     print(np.mean(scores["train_score"]))
 
-    unique_classes = np.unique(y)
+    unique_classes = np.unique(y[valid_indices])
 
     for cls in unique_classes:
         class_indices = np.where(y[valid_indices] == cls)[0]
