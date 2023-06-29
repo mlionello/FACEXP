@@ -3,7 +3,7 @@ import os
 import pickle
 from pathlib import Path
 import numpy as np
-from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.model_selection import StratifiedKFold, cross_validate, cross_val_predict
 from sklearn.neighbors import KNeighborsClassifier as knnc
 from sklearn.decomposition import PCA
 
@@ -86,20 +86,6 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
         print(f"Class {cls}:")
         print(f"  Mean test score: {np.mean(class_test_scores)}")
     return
-
-    # print(preds.shape)
-    # print(y[valid_indices].shape)
-    # print(np.mean(scores["test_score"]))
-    # print(np.mean(scores["train_score"]))
-    #
-    # unique_classes = np.unique(y)
-    #
-    # for cls in unique_classes:
-    #     class_indices = np.where(y[valid_indices] == cls)[0]
-    #     class_test_scores = scores["test_score"][class_indices]
-    #     print(f"Class {cls}:")
-    #     print(f"  Mean test score: {np.mean(class_test_scores)}")
-    # return
 
     for actor_ind in unique_actors:
         # if actor_ind == 18:
