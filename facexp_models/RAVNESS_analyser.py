@@ -77,14 +77,14 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
     print(np.mean(scores["train_score"]))
 
     unique_classes = np.unique(y)
+    print(unique_classes)
+    print(np.unique(scores["test_score"]))
 
     for cls in unique_classes:
         class_indices = np.where(y[valid_indices] == cls)[0]
         class_test_scores = scores["test_score"][class_indices]
-        class_train_scores = scores["train_score"][class_indices]
         print(f"Class {cls}:")
         print(f"  Mean test score: {np.mean(class_test_scores)}")
-        print(f"  Mean train score: {np.mean(class_train_scores)}")
     return
 
     for actor_ind in unique_actors:
