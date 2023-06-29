@@ -80,7 +80,6 @@ def run_analyse(pathfolder, outpathfolder, custom_cond, pca_n=20, k_nn=5):
 
     for cls in unique_classes:
         class_indices = np.where(y[valid_indices] == cls)[0]
-        print(class_indices)
         class_test_scores = scores["test_score"][class_indices]
         print(f"Class {cls}:")
         print(f"  Mean test score: {np.mean(class_test_scores)}")
