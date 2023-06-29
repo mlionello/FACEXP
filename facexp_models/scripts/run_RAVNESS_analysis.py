@@ -9,7 +9,7 @@ with Pool(processes=8) as pool:
                 for tst_intensity in [0, 1, 2]:
                     for tr_intensity in [0, 1, 2]:
                         outputid = f"trch_{tr_ch}_trrep_{tr_rep}_trintensity_{tr_intensity}_tstrep_{tst_rep}_tstintensity_{tst_intensity}"
-                        inputdir = Path("/home/matteo.lionello/RAVDESS/pdist_pedferef/")
+                        inputdir = Path("/home/matteo.lionello/FACEXP/mediapipe/RAVDESS/")
                         outputid = inputdir / outputid
                         custom_cond = {
                             "tr_intensity": tr_intensity,
