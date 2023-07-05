@@ -1,4 +1,9 @@
 samplevideo/*/*
+facexp_models/results/*/*
+facexp_models/tmp*
+mediapipe/*/*
+*.pkl
+*.png
 *.zip
 *.h5
 *.npy
