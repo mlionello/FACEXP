@@ -24,7 +24,7 @@ def main(inputfile, outfolder, invid, shading):
 
     # data_4d.apply_vertex_mask('face')
     with h5py.File(inputfile) as data_in:
-        data_4d = data_in("v")
+        data_4d = data_in["v"]
 
     if invid is not None:
         renderer = VideoRenderer(shading=shading, loglevel='INFO', background=invid)
