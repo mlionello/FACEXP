@@ -9,20 +9,25 @@ import cv2
 def get_h5(input_path, output_path, model):
     input_path = Path(input_path)
     output_path = Path(output_path)
+    local_outpath = output_path / 'local'
+    raw_outpath = output_path / 'raw'
     log_file = output_path / "error_log.txt"
-    if not output_path.exists():
-        output_path.mkdir(parents=True)
+    if not raw_outpath.exists():
+        raw_outpath.mkdir(parents=True)
+    if not local_outpath.exists():
+        local_outpath.mkdir(parents=True)
 
     for file_name in input_path.glob("**/*.mp4"):
-        output_file = output_path / (file_name.stem + ".h5")
+        output_file = local_outpath / (file_name.stem + ".h5")
         if os.path.isfile(output_file):
             continue
         print("encoding video from: " + str(file_name) + " to: " + str(output_file))
 
         try:
             data = videorecon(file_name, recon_model=model, loglevel="WARNING")
+            data.save(raw_outpath)
             data.to_local()
-            data.save(output_file)
+            data.save(local_outpath)
         except Exception as e:
             print("ERROR IN PROCESSING " + str(file_name) + "\n")
             error_message = f"Error: {e}"
