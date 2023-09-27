@@ -18,8 +18,8 @@ def main(inputfile, outfolder, invid, shading):
     if invid is not None:
         on_bckg="_ol"
     f_out = outfolder / 'render' / f"{inputfile.stem}_{shading}{on_bckg}.mp4"
-    if fout.exists():
-        print(f"output file already exists: {fout}")
+    if f_out.exists():
+        print(f"output file already exists: {f_out}")
         return
 
     # data_4d.apply_vertex_mask('face')
