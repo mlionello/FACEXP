@@ -26,9 +26,9 @@ def main(inputfile, outfolder, invid, shading):
         data_4d = data_in("v")
 
     if vid is not None:
-        renderer = VideoRenderer(shading=shading, loglevel='WARNING', background=invid)
+        renderer = VideoRenderer(shading=shading, loglevel='INFO', background=invid)
     else:
-        renderer = VideoRenderer(shading=shading, loglevel='WARNING')
+        renderer = VideoRenderer(shading=shading, loglevel='INFO')
     renderer.render(f_out, data_4d)
 
 

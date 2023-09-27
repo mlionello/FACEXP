@@ -25,7 +25,7 @@ def get_h5(input_path, output_path, model):
         print("encoding video from: " + str(file_name) + " to: " + str(output_file))
 
         try:
-            data = videorecon(file_name, recon_model=model, loglevel="WARNING")
+            data = videorecon(file_name, recon_model=model, loglevel="DEBUG")
             data.save(raw_outpath)
             data.to_local()
             data.save(local_outpath)
