@@ -20,6 +20,7 @@ def get_h5(input_path, output_path, model):
     for file_name in input_path.glob("**/*.mp4"):
         output_file = local_outpath / (file_name.stem + ".h5")
         if os.path.isfile(output_file):
+            print(str(output_file) + " already existing;")
             continue
         print("encoding video from: " + str(file_name) + " to: " + str(output_file))
 
