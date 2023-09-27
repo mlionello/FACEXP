@@ -31,7 +31,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Create vertices animation from given h5 file"
     )
-    parser.add_argument("input", type=str, help="input file")
+    parser.add_argument("--input", type=str, help="input file")
     parser.add_argument("--out", type=str, default="./", help="output folder")
     args = parser.parse_args()
     create_gif(Path(args.input), Path(args.out))
