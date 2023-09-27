@@ -18,17 +18,18 @@ def get_h5(input_path, output_path, model):
         local_outpath.mkdir(parents=True)
 
     for file_name in input_path.glob("**/*.mp4"):
-        output_file = local_outpath / (file_name.stem + ".h5")
-        if os.path.isfile(output_file):
-            print(str(output_file) + " already existing;")
+        outlocal_file = local_outpath / (file_name.stem + "_local.h5")
+        outraw_file = raw_outpath / (file_name.stem + "_raw.h5")
+        if os.path.isfile(outlocal_file):
+            print(str(outlocal_file) + " already existing;")
             continue
-        print("encoding video from: " + str(file_name) + " to: " + str(output_file))
+        print("encoding video from: " + str(file_name) + " to: " + str(outlocal_file))
 
         try:
             data = videorecon(file_name, recon_model=model, loglevel="DEBUG")
-            data.save(raw_outpath)
+            data.save(outraw_file)
             data.to_local()
-            data.save(local_outpath)
+            data.save(outlocal_file)
         except Exception as e:
             print("ERROR IN PROCESSING " + str(file_name) + "\n")
             error_message = f"Error: {e}"
