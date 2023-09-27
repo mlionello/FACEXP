@@ -15,7 +15,7 @@ def main(inputfile, outfolder, invid, shading):
         outfolder.mkdir(parents=True)
 
     on_bckg = ""
-    if vid is not None:
+    if invid is not None:
         on_bckg="_ol"
     f_out = outfolder / 'render' / f"{inputfile.stem}_{shading}{on_bckg}.mp4"
     if fout.exists():
@@ -26,7 +26,7 @@ def main(inputfile, outfolder, invid, shading):
     with h5py.File(inputfile) as data_in:
         data_4d = data_in("v")
 
-    if vid is not None:
+    if invid is not None:
         renderer = VideoRenderer(shading=shading, loglevel='INFO', background=invid)
     else:
         renderer = VideoRenderer(shading=shading, loglevel='INFO')
