@@ -56,4 +56,7 @@ if __name__ == "__main__":
         "--model", type=str, default="mediapipe", help="videorecon model"
     )
     args = parser.parse_args()
+    if args.model == 'img2vid':
+        resampleimage(args.input, args.out)
+
     get_h5(args.input, args.out, args.model)

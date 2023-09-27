@@ -4,6 +4,7 @@ import argparse
 import os
 import h5py
 
+
 def main(inputfile, outfolder, invid, shading):
     inputfile = Path(inputfile)
     outfolder = Path(outfolder)
