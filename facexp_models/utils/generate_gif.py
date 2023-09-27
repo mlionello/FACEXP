@@ -10,10 +10,10 @@ def create_gif(file_in, out_folder):
     with h5py.File(file_in) as data_in:
         vertices = np.array(data_in["v"])
     fig, ax = plt.subplots(figsize=(5, 5))
-    miny = min(vertices[:,:,1])
-    maxy = max(vertices[:,:,1])
-    minx = min(vertices[:,:,0])
-    maxx = max(vertices[:,:,0])
+    miny = np.min(vertices[:,:,1])
+    maxy = np.max(vertices[:,:,1])
+    minx = np.min(vertices[:,:,0])
+    maxx = np.max(vertices[:,:,0])
 
 
     def update(i):
