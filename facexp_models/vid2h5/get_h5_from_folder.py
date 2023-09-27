@@ -58,5 +58,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.model == 'img2vid':
         resampleimage(args.input, args.out)
-
-    get_h5(args.input, args.out, args.model)
+    else:
+        get_h5(args.input, args.out, args.model)
