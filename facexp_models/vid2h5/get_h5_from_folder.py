@@ -26,7 +26,7 @@ def get_h5(input_path, output_path, model):
         print("encoding video from: " + str(file_name) + " to: " + str(outlocal_file))
 
         try:
-            data = videorecon(file_name, recon_model=model, loglevel="DEBUG")
+            data = videorecon(file_name, recon_model=model, batch_size=16, loglevel="DEBUG")
             data.save(outraw_file)
             data.to_local()
             data.save(outlocal_file)
@@ -50,8 +50,8 @@ def resampleimage(input_path, output_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process vid files to .h5 (local)")
-    parser.add_argument("--input", type=str, help="input_folder")
-    parser.add_argument("--out", type=str, default="./", help="output folder")
+    parser.add_argument("--input", default='/home/matteo/videosample/tmp', type=str, help="input_folder")
+    parser.add_argument("--out", default='/home/matteo/videosample/', type=str, help="output folder")
     parser.add_argument(
         "--model", type=str, default="mediapipe", help="videorecon model"
     )
