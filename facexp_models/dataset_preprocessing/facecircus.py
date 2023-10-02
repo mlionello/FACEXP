@@ -84,7 +84,7 @@ def preprocess_h5_files(datapath):
     return data, data_L2norm, direction_L2
 
 
-def compute_isc(data_L2norm, pca_component, fps=30, dopca=1):
+def compute_isc(data_L2norm, pca_component, fps=30, dopca=1, w_lens=None):
 
     # compute zscore along time dimension
     data_L2_zscored = stats.zscore(data_L2norm, axis=1)
@@ -92,7 +92,8 @@ def compute_isc(data_L2norm, pca_component, fps=30, dopca=1):
     timepoints = data_L2norm.shape[1]
     nb_features = data_L2norm.shape[2]
 
-    w_lens = np.arange(2, 20, 2)*fps
+    if w_lens is None:
+        w_lens = np.arange(2, 20, 2)*fps
     nb_windows = len(w_lens)
 
     indata = data_L2norm
@@ -121,7 +122,7 @@ def compute_isc(data_L2norm, pca_component, fps=30, dopca=1):
         for vx in range(nb_features):
             win_avg = np.mean(indata[:, t_range, vx],2)
             isc[win_j, :, :, vx] = np.corrcoef(win_avg)
-            if win_j == nb_windows:
+            if win_j == nb_windows-1:
                 isc[-1, :, :, vx] = np.corrcoef(indata[:, :, vx])
 
     return isc
@@ -129,11 +130,15 @@ def compute_isc(data_L2norm, pca_component, fps=30, dopca=1):
 if __name__=="__main__":
     dopca = 0
     pca_component = 20
-    file2load = Path('/home/matteo/Code/FACEXP/facexp_models/dataset_preprocessing/data_L2norm.npy')
+    w_lens = np.arange(1, 5, 0.5)  # in seconds
+    datapath = Path('/data1/EMOVIE_sampaolo/FACE/FaceCircus/data/')
+    datapath = Path('/home/matteo/Code/FACEXP/data')
+    file2load = Path(datapath / 'data_L2norm.npy')
     if file2load.exists():
         data_L2norm = np.load(file2load)
     else:
-        datapath = Path('/data1/EMOVIE_sampaolo/FACE/FaceCircus/data/')
-        datapath = Path('/home/matteo/Code/FACEXP/data')
         data, data_L2norm, data_L2_direction = preprocess_h5_files(datapath)
-    isc = compute_isc(data_L2norm, pca_component, dopca=dopca)
+        np.save(datapath / 'data', data)
+        np.save(datapath / 'data_L2norm', data_L2norm)
+    isc = compute_isc(data_L2norm, pca_component, dopca=dopca, w_lens=w_lens)
+    np.save(datapath / 'isc', isc)
