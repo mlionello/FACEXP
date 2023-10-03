@@ -1,3 +1,4 @@
+import multiprocess as mp
 import os
 import argparse
 from medusa.recon import videorecon
@@ -26,7 +27,7 @@ def get_h5(input_path, output_path, model):
         print("encoding video from: " + str(file_name) + " to: " + str(outlocal_file))
 
         try:
-            data = videorecon(file_name, recon_model=model, loglevel="DEBUG")
+            data = videorecon(file_name, recon_model=model, batch_size=64, loglevel="INFO")
             data.save(outraw_file)
             data.to_local()
             data.save(outlocal_file)
@@ -49,14 +50,16 @@ def resampleimage(input_path, output_path):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process vid files to .h5 (local)")
-    parser.add_argument("--input", type=str, help="input_folder")
-    parser.add_argument("--out", type=str, default="./", help="output folder")
-    parser.add_argument(
+    with mp.Pool(10) as pool:
+      parser = argparse.ArgumentParser(description="Process vid files to .h5 (local)")
+      parser.add_argument("--input", type=str, help="input_folder")
+      parser.add_argument("--out", type=str, default="./", help="output folder")
+      parser.add_argument(
         "--model", type=str, default="mediapipe", help="videorecon model"
-    )
-    args = parser.parse_args()
-    if args.model == 'img2vid':
+      )
+      args = parser.parse_args()
+      if args.model == 'img2vid':
         resampleimage(args.input, args.out)
-    else:
+      else:
         get_h5(args.input, args.out, args.model)
+
