@@ -14,7 +14,9 @@ from pathlib import Path
 from scipy.spatial.distance import pdist
 from scipy import stats
 from sklearn.decomposition import PCA
-
+import numpy as np
+from scipy.stats import pearsonr
+import pandas as pd
 
 def preprocess_h5_files(datapath):
     # import metadata
@@ -37,8 +39,6 @@ def preprocess_h5_files(datapath):
     meshes = []
     shapes = []
     in_folder = datapath / 'h5out' / 'local'
-
-    file2load = Path('/home/matteo/Code/FACEXP/facexp_models/dataset_preprocessing/data_L2norm.npy')
 
     for j, fileh5 in enumerate(in_folder.glob("*.h5")):
         print(f"loading: {str(fileh5)}", end="\n")
@@ -84,32 +84,14 @@ def preprocess_h5_files(datapath):
     return data, data_L2norm, direction_L2
 
 
-def compute_isc(data_L2norm, pca_component, fps=30, dopca=1, w_lens=None):
-
-    # compute zscore along time dimension
-    data_L2_zscored = stats.zscore(data_L2norm, axis=1)
-    nb_subj = data_L2norm.shape[0]
-    timepoints = data_L2norm.shape[1]
-    nb_features = data_L2norm.shape[2]
-
-    if w_lens is None:
-        w_lens = np.arange(2, 20, 2)*fps
+def compute_isc(data, w_lens):
+    nb_subj = data.shape[0]
+    timepoints = data.shape[1]
+    nb_features = data.shape[2]
     nb_windows = len(w_lens)
 
-    indata = data_L2norm
-    if dopca:
-        nb_features = pca_component
-        pca = PCA(n_components=pca_component)
-        concat_L2_norm_zscored = np.reshape(data_L2_zscored,[-1, data_L2_zscored.shape[2]])
-        pca.fit(concat_L2_norm_zscored)
-
-        L2_norm_zscored_pca = np.zeros([data_L2_zscored.shape[0], data_L2_zscored.shape[1], pca_component])*np.nan
-        L2_norm_zscored_pca[subj, :, :] = pca.transform(data_L2_zscored[subj])
-        for subj in range(data_L2_zscored.shape[0]):
-            L2_norm_zscored_pca[subj, :, :] = pca.transform(data_L2_zscored[subj])
-        indata = L2_norm_zscored_pca
-
-    isc = np.zeros([nb_windows+1, nb_subj, nb_subj, nb_features])*np.nan
+    isc_corr = np.zeros([nb_windows+1, nb_subj, nb_subj, nb_features])*np.nan
+    isc_pval = np.zeros([nb_windows+1, nb_subj, nb_subj, nb_features])*np.nan
 
     for win_j, t_win in enumerate(w_lens):
         print(f"\rt_window {win_j+1} / {len(w_lens)}", end='')
@@ -120,25 +102,58 @@ def compute_isc(data_L2norm, pca_component, fps=30, dopca=1, w_lens=None):
             for t in range(np.int32(np.floor((timepoints - t_win) / hop_size)))
         ]
         for vx in range(nb_features):
-            win_avg = np.mean(indata[:, t_range, vx],2)
-            isc[win_j, :, :, vx] = np.corrcoef(win_avg)
+            win_avg = np.mean(data[:, t_range, vx],2)
+            isc_corr[win_j, :, :, vx] = np.corrcoef(win_avg)
+            isc_pval[win_j, :, :, vx] = get_pval(data[:, :, vx])
             if win_j == nb_windows-1:
-                isc[-1, :, :, vx] = np.corrcoef(indata[:, :, vx])
+                isc_corr[-1, :, :, vx] = np.corrcoef(data[:, :, vx])
+                isc_pval[-1, :, :, vx] = get_pval(data[:, :, vx])
 
-    return isc
+    return isc_corr, isc_pval
 
-if __name__=="__main__":
+
+def get_pca(data, pca_component):
+    pca = PCA(n_components=pca_component)
+    data_reshaped = np.reshape(data,[-1, data.shape[2]])
+    pca.fit(data_reshaped)
+
+    data_out = np.zeros([data.shape[0], data.shape[1], pca_component])*np.nan
+    for subj in range(data.shape[0]):
+        data_out[subj, :, :] = pca.transform(data[subj])
+    return data_out
+
+
+def get_pval(data):
+    x = pd.DataFrame(data).transpose()
+    p_values = x.corr(method='pearson', min_periods=1)
+
+    return p_values.to_numpy()
+
+if __name__ == "__main__":
     dopca = 0
     pca_component = 20
-    w_lens = np.arange(1, 5, 0.5)  # in seconds
+    fps = 30
+    w_lens = np.int32(np.arange(1, 5, 0.5)*fps)  # in seconds
     datapath = Path('/data1/EMOVIE_sampaolo/FACE/FaceCircus/data/')
     datapath = Path('/home/matteo/Code/FACEXP/data')
-    file2load = Path(datapath / 'data_L2norm.npy')
+    file2load = Path(datapath / 'data.npy')
     if file2load.exists():
-        data_L2norm = np.load(file2load)
+        data = np.load()
     else:
         data, data_L2norm, data_L2_direction = preprocess_h5_files(datapath)
         np.save(datapath / 'data', data)
         np.save(datapath / 'data_L2norm', data_L2norm)
-    isc = compute_isc(data_L2norm, pca_component, dopca=dopca, w_lens=w_lens)
-    np.save(datapath / 'isc', isc)
+
+    data_L2norm = np.sqrt(np.sum(data[:, :, :, [0, 1]] ** 2, axis=-1))
+    data_pdist = pdist(data)
+    if w_lens is None:
+        w_lens = np.arange(2, 20, 2)*fps
+
+    indata = data_L2norm
+    if dopca:
+        indata = stats.zscore(indata, axis=1)
+        indata = get_pca(indata, pca_component)
+
+    isc_corr, isc_pval = compute_isc(indata, w_lens=w_lens)
+    np.save(datapath / 'isc_corr', isc_corr)
+    np.save(datapath / 'isc_pval', isc_pval)
