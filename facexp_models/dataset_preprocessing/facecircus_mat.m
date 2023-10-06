@@ -163,9 +163,9 @@ function [isc_corr, isc_pval] = compute_isc(data, w_lens)
         win_avg = compute_win_avg(data, t_range);
         
         for n = 1 : size(win_avg,3)
-            [r, p] = corr(squeeze(win_avg(:,:,n))');
-            isc_corr(win_j, :, :, vx) = r;
-            isc_pval(win_j, :, :, vx) = p;
+            [r, p] = corr(squeeze(win_avg(:, :, n))');
+            isc_corr(win_j, :, :, n) = r;
+            isc_pval(win_j, :, :, n) = p;
         end
         frpintf(cr)
     
