@@ -66,7 +66,7 @@ if prop_agreem>0
         'UniformOutput', false);
     frame_indices = unique(cell2mat(frame_indices));
 else 
-    frame_indices = 1: size(FaceRatingsProcessed, 2)*fps;
+    frame_indices = 60: size(FaceRatingsProcessed, 2)*fps;
 end
 
 % compute isc corr matrix for different windows length
@@ -127,10 +127,10 @@ saveas(fig, fullfile(outpath,filename));
 close(fig);
 
 filename_suffix = 1;
-filename = "isc_"+method+"_";
-while exist(fullfile(datapath, filename+string(filename_suffix)))
+filename = "isc_struct";
+while exist(fullfile(outpath, filename+string(filename_suffix)))
     filename_suffix = filename_suffix+1;
 end
-save(fullfile(datapath, filename+string(filename_suffix)), "ISC", '-v7.3')
+save(fullfile(outpath, filename+string(filename_suffix)), "ISC", '-v7.3')
 end
 

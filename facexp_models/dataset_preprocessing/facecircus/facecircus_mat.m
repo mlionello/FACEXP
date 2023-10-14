@@ -3,9 +3,8 @@ fps = 30;
 
 num_neigh = 5; 
 method = 'pdist'; % supported 'l2' or 'pdist'
-w_lens = int32((1:0.5:6) * fps);  % in seconds
+w_lens = int32((2:2:10) * fps);  % in seconds
 w_lens = [0, w_lens];
-w_lens = int32((4:6:40) * fps);  % in seconds
 
 props = 0.4:0.1:0.8;
 props = 0;
@@ -66,7 +65,7 @@ if prop_agreem>0
         'UniformOutput', false);
     frame_indices = unique(cell2mat(frame_indices));
 else 
-    frame_indices = 1: size(FaceRatingsProcessed, 2)*fps;
+    frame_indices = 60: size(FaceRatingsProcessed, 2)*fps;
 end
 
 % compute isc corr matrix for different windows length

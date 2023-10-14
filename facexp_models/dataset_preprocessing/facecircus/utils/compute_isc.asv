@@ -85,6 +85,6 @@ end
 
 function win_avg = compute_win_avg(data, frame_indices_schema)
         win_avg = cellfun(@(indices) mean(data( :, indices), 2), frame_indices_schema, 'UniformOutput', false);
-        win_avg = cat(2, win_avg{:});
+        win_avg = cat(3, win_avg{:});
         win_avg = squeeze(win_avg);
 end
