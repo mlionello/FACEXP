@@ -1,13 +1,17 @@
 clc; clear; addpath('utils');
 fps = 30;
-
-num_neigh = 5; 
-method = 'pdist'; % supported 'l2' or 'pdist'
-w_lens = int32((2:2:10) * fps);  % in seconds
+corr_method = 'corr';
+w_lens = int32((2: 2: 10) * fps);  % in seconds
 w_lens = [0, w_lens];
+w_lens = 0;
+w_lens = 1*fps;
+
+num_neigh = 5;
+method = 'pdist'; % supported 'l2' or 'pdist'
 
 props = 0.4:0.1:0.8;
 props = 0;
+props = 0.4;
 
 datapath = "/data1/EMOVIE_sampaolo/FACE/FaceCircus/data/";
 % datapath = "/home/matteo/Code/FACEXP/data/";
@@ -63,7 +67,7 @@ if prop_agreem>0
     t_indices = find(sum(squeeze(FaceRatingsProcessed(1, :, :)==100), 2) > n_subjs*prop_agreem);
     frame_indices = cellfun(@(t) (t-2)*fps : (t+2)*fps, num2cell(t_indices), ...
         'UniformOutput', false);
-    frame_indices = unique(cell2mat(frame_indices));
+    frame_indices = unique(cell2mat(frame_indices))';
 else 
     frame_indices = 60: size(FaceRatingsProcessed, 2)*fps;
 end
@@ -71,43 +75,49 @@ end
 % compute isc corr matrix for different windows length
 % OUTPUT := [n_windlens, n_subj, n_subj, n_vertices]
 if false % exist(fullfile(outpath, 'isc'), 'file')
-    load(fullfile(outpath, 'isc'))
+    load( fullfile(outpath, 'isc'))
 else
-    isc_corr = compute_isc(file_ids, w_lens, frame_indices, metadata);
+    isc_corr = isc_pairwise_sampling(file_ids, w_lens, frame_indices, metadata, outpath, corr_method);
 end
 
 % calculate the an the average isc
-isc_corr_mean = mean(isc_corr, [2, 3]);
-isc_corr_mean = atanh(isc_corr_mean);
-isc_corr_mean = permute(isc_corr_mean, [5, 4, 1, 2, 3]); % perms by feat by wins
+isc_corr_mean = mean(isc_corr, 2);
+isc_corr_mean = atanh(isc_corr_mean); %fisher transform
+isc_corr_mean = permute(isc_corr_mean, [ 4, 3, 1, 2]); % perms by feat by wins
 
 fw_max = max(isc_corr_mean(2: end, :, :), [], 2);
+%plot_hist_h0nalt(fw_max, isc_corr_mean(1, :), alpha, outpath)
+r_crit = quantile(fw_max, 1-(alpha/2));
+ind = find(isc_corr_mean(1,:) > r_crit);
+isc_corr_mean(1, ind);
 
 clear pval_corrected
 for j = 1: size(fw_max, 3)
     concat_unc = cat(1, isc_corr_mean(1, :, j), ...
         repmat(fw_max(:, :, j), 1, size(isc_corr_mean, 2), 1));
-    pval_corrected{j} = tiedrank(-concat_unc, 0, 1)/size(concat_unc, 1);
+    pval_corrected{j} = tiedrank( -concat_unc, 0, 1)/ (size(concat_unc, 1)/2 + 1);
 end
 pval_corrected = cat(3, pval_corrected{:});
 
 alpha = 0.05;
-pval_corrected = pval_corrected < alpha/2;
+pval_accepted = pval_corrected < alpha;
 
-mean_subj_sign = isc_corr_mean;
-mean_subj_sign(~pval_corrected)=nan;
+mean_subj_sign = isc_corr_mean(1, :);
+mean_subj_sign( ~pval_accepted(1, :)) = nan;
 
 % get the vertices indices for the 20 highest correlation values
-[values, indices] = maxk(mean_subj_sign(1,:,:), 20, 2);
-%plot(mean_subj_sign(:, indices(1, 1:10)))
+[values, indices] = maxk(mean_subj_sign(1, :, :), 20, 2);
+indices = find(mean_subj_sign(1, :, :) > 0.15);
+values = mean_subj_sign(1, indices, :);
+% plot(mean_subj_sign(:, indices(1, 1:10)))
 
 ISC.method = method;
-ISC.prop_agreem{prop_i} = prop_agreem;
+ISC.prop_agreem = prop_agreem;
 ISC.w_lens = w_lens;
-ISC.isc_corr{prop_i} = isc_corr;
-ISC.pval_corrected{prop_i} = pval_corrected;
-ISC.indices_highest_corr{prop_i} = squeeze(indices);
-ISC.values_highest_corr{prop_i} = squeeze(values);
+ISC.isc_corr = isc_corr;
+ISC.pval_corrected = pval_corrected;
+ISC.indices_highest_corr = squeeze(indices);
+ISC.values_highest_corr = squeeze(values);
 ISC.subj_id = subj_id;
 ISC.alpha = alpha;
 ISC.fw_max = fw_max;
@@ -117,9 +127,9 @@ ISC.mean_subj_sign = mean_subj_sign;
 ISC.n_subjs = n_subjs;
 ISC.mean_pos_3nn = mean_pos_3nn;
 
-plot_res_and_save(mean_pos_3nn, values, indices, w_lens, method, fps, prop_agreem, outpath, num_neigh)
+plot_res_and_save(mean_pos_3nn, values, indices, w_lens, method, fps, prop_agreem, outpath, datapath, num_neigh, isc_corr)
 
-fig=figure('Visible',0); subplot(212); plot(squeeze(nanmean(mean_subj_sign(1, :, :), 2)))
+fig = figure('Visible',0); subplot(212); plot(squeeze(nanmean(mean_subj_sign(1, :, :), 2)))
 subplot(211); plot(squeeze(mean_subj_sign(1, :, :))'); 
 filename = compose("win_increm_signi_corr.png" );
 saveas(fig, fullfile(outpath,filename));
@@ -128,8 +138,22 @@ close(fig);
 filename_suffix = 1;
 filename = "isc_struct";
 while exist(fullfile(outpath, filename+string(filename_suffix)))
-    filename_suffix = filename_suffix+1;
+    filename_suffix = filename_suffix + 1;
 end
 save(fullfile(outpath, filename+string(filename_suffix)), "ISC", '-v7.3')
 end
 
+
+function plot_hist_h0nalt(h0, alt, alpha, outpath)
+    figure;
+    hist(alt, 30); hold on;
+    hist(h0, 30);
+    tcrit = quantile(h0,[alpha/2, 1-(alpha/2)]);
+    line([tcrit(1) tcrit(1)],[0 20],...
+    'color',[.2 .2 .2],...
+    'linestyle', '--')
+    line([tcrit(2) tcrit(2)],[0 20],...
+    'color',[.2 .2 .2],...
+    'linestyle', '--')
+    hold off
+end

@@ -1,12 +1,12 @@
 function plot_res_and_save(mean_pos_3nn, values, indices, w_lens, method, fps, prop_agreem, outpath, datapath, num_neigh, isc_corr)
-indices= squeeze(indices)';
-values= squeeze(values)';
-template = h5read(datapath + '/h5out_30fps/local/l3celdsvq6yu4zufiag3rozjhmttv13n_output-001_local.h5', '/v');
+indices= squeeze(indices);
+values= squeeze(values);
+template = h5read(datapath + '/h5out_30fps/local/l3celdsvq6yu4zufiag3rozjhmttv13n_output_local.h5', '/v');
 template =  squeeze(mean(template, 3));
 fig = figure('Visible', 0, 'Position',[0 0 1024 720]);
 for win_i = 1: size(indices, 1)
-for v =1: length(w_lens)
     subplot(ceil(sqrt(length(w_lens))), ceil(sqrt(length(w_lens))), win_i)
+for v =1: length(w_lens)
     cmap = jet;
     scatter(template(1, :), template(2, :));
     hold on;
@@ -28,10 +28,10 @@ for v =1: length(w_lens)
             if isnan(values(win_i, vx))
                 break
             end
-            ind2sqr = zeros(1, size(isc_corr, 4));
+            ind2sqr = zeros(1, size(isc_corr, 3));
             ind2sqr(indices(win_i, vx))=1;
             [i, j] = find(squareform(ind2sqr));
-            color_idx = round(interp1(linspace(-1, 1, size(cmap, 1)), 1:size(cmap, 1), values(win_i, vx)));
+            color_idx = round(interp1(linspace(min(values,[],'all'), max(values,[],'all'), size(cmap, 1)), 1:size(cmap, 1), values(win_i, vx)));
             if num_neigh>0
                 line([mean_pos_3nn(i(1), 1), mean_pos_3nn(j(1), 1)], [mean_pos_3nn(i(1), 2), mean_pos_3nn(j(1), 2)], 'Color', cmap(color_idx, :), 'LineWidth', 1 );
             else
