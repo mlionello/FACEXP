@@ -14,20 +14,18 @@ for j = 1: nb_perm + 1
 
         for slice_i = 1 : length(frame_indices_slices_schema)
 
-            t_perm = frame_indices_slices_schema{slice_i};
-            [~, ind] = sort( perm1( t_perm));
-            perm1_slice = non_perm1(t_perm(ind));
+            [~, ind] = sort( perm1( frame_indices_slices_schema{slice_i}));
+            nonperm(frame_indices_slices_schema(ind))
 
-            t_perm = frame_indices_slices_schema{slice_i};
-            [~, ind] = sort( perm2( t_perm));
-            perm2_slice = non_perm2(t_perm(ind));
+            sub1_slice = sub1_perm(:, frame_indices_slices_schema{slice_i});
+            sub2_slice = sub2_perm(:, frame_indices_slices_schema{slice_i});
 
             tmp_corr = fast_corr( ...
-                perm1_slice', ...
-                perm2_slice');
+                sub1_slice', ...
+                sub2_slice');
 
-            tcorr(slice_i, :, j, 1) = min(1);
-            tcorr(slice_i, :, j, 2) = min(1);
+            tcorr(slice_i, :, j, 1) = min();
+            tcorr(slice_i, :, j, 2) = min();
 
         end
 end

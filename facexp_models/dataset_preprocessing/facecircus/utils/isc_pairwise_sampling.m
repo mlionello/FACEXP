@@ -14,7 +14,7 @@ function [isc_corr] = isc_pairwise_sampling(file_ids, w_lens, frame_indices, met
     ws.metadata = metadata; ws.nb_comb_subj = nb_comb_subj; ws.nb_perm = nb_perm;
     
     for n = 1: nb_subj
-        for j = 1: nb_perm+1
+        for j = 1: nb_perm + 1
             if j == 1
                 frames_perm_schema{n, j} = frame_indices;
                 continue

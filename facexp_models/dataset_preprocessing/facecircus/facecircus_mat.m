@@ -1,6 +1,6 @@
 clc; clear; addpath('utils');
 fps = 30;
-corr_method = 'corr';
+corr_method = 'tcorr';
 w_lens = int32((2: 2: 10) * fps);  % in seconds
 w_lens = [0, w_lens];
 w_lens = 0;
@@ -9,7 +9,7 @@ w_lens = 1*fps;
 num_neigh = 5;
 method = 'pdist'; % supported 'l2' or 'pdist'
 
-props = 0.4:0.1:0.8;
+props = 0.4: 0.1: 0.8;
 props = 0;
 props = 0.4;
 
@@ -86,7 +86,7 @@ isc_corr_mean = atanh(isc_corr_mean); %fisher transform
 isc_corr_mean = permute(isc_corr_mean, [ 4, 3, 1, 2]); % perms by feat by wins
 
 fw_max = max(isc_corr_mean(2: end, :, :), [], 2);
-%plot_hist_h0nalt(fw_max, isc_corr_mean(1, :), alpha, outpath)
+% plot_hist_h0nalt(fw_max, isc_corr_mean(1, :), alpha, outpath)
 r_crit = quantile(fw_max, 1-(alpha/2));
 ind = find(isc_corr_mean(1,:) > r_crit);
 isc_corr_mean(1, ind);
@@ -95,7 +95,7 @@ clear pval_corrected
 for j = 1: size(fw_max, 3)
     concat_unc = cat(1, isc_corr_mean(1, :, j), ...
         repmat(fw_max(:, :, j), 1, size(isc_corr_mean, 2), 1));
-    pval_corrected{j} = tiedrank( -concat_unc, 0, 1)/ (size(concat_unc, 1)/2 + 1);
+    pval_corrected{j} = tiedrank( concat_unc, 0, 1)/ (size(concat_unc, 1)/2 + 1);
 end
 pval_corrected = cat(3, pval_corrected{:});
 
