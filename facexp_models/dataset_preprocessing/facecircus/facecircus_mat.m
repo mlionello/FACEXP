@@ -1,7 +1,7 @@
 clc; clear; addpath('utils');
 fps = 30;
-corr_method = 'tcorr';
-w_lens = 5*fps;
+corr_method = 'corr';
+w_lens = 0;
 
 num_neigh = 5;
 method = 'pdist'; % supported 'l2' or 'pdist'

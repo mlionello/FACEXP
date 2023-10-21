@@ -1,6 +1,6 @@
 function analyse_sliding_window_isc(ISC, FaceRatingsProcessed, alpha, agreement_perc, kmax, show_plot)
 arguments
-    ISC struct {is_tcorr(ISC)};
+    ISC {is_tcorr(ISC)};
     FaceRatingsProcessed = [];
     alpha = 0.05;
     agreement_perc = 100;
@@ -35,7 +35,7 @@ end
         r_crit_singlefeat_max, r_crit_singlefeat_min, outfig, show_plot)
 
     % downsampling behavioural cumulative agreements by interpolation
-    beahv = sum(FaceRatingsProcessed >= agreement_perc, 3);
+    beahv = sum(FaceRatingsProcessed == 100, 3);
     %beahvd = FaceRatingsOverlap;        
     oL = length(beahv);
     downsampled_behav = interp1(1:oL, beahv, linspace(1, oL, size(fw_max, 3)));
