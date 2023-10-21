@@ -1,4 +1,4 @@
-function plot_res_and_save(mean_pos_3nn, values, indices, method, fps, prop_agreem, outpath, datapath, num_neigh, nb_features, outfig, show_plot)
+function plot_res_and_save(mean_pos_3nn, values, indices, method, datapath, num_neigh, nb_features, outfig, show_plot)
 mincmap = -0.2;
 maxcmap = 0.3;
 indices= squeeze(indices);

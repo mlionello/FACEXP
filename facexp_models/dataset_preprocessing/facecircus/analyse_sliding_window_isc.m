@@ -14,7 +14,7 @@ end
         FaceRatingsProcessed = FaceRatingsProcessed.FaceRatingsProcessed;
     end
     suffix = 1;
-    outfig = fullfile(ISC.outpaht, 'figures', compose('agree_%dperc_kmax_%d_', agreement_perc, kmax ));
+    outfig = fullfile(ISC.outpaht, 'figures', compose('agreelvl_%d_kmax_%d_', agreement_perc, kmax ));
     while exist(outfig+string(suffix), 'dir'); suffix = suffix + 1; end
     outfig = outfig + string(suffix);
     if ~show_plot; mkdir(outfig); end
@@ -25,7 +25,15 @@ end
     fw_min = min(ISC.isc_corr_mean(2: end, :, :), [], 2);
     r_crit_singlefeat_max = squeeze(quantile(fw_max, 1-(alpha/2), 1));
     r_crit_singlefeat_min = squeeze(quantile(fw_min, (alpha/2), 1));
-    
+    % set to nan vertices in windows below significant level
+    mean_subj_sign = squeeze(ISC.isc_corr_mean(1, :, :));
+    mean_subj_sign( mean_subj_sign < r_crit_singlefeat_max' & ...
+        mean_subj_sign > r_crit_singlefeat_min') = nan;
+    % plot features distribution against null distribution
+    plot_hist_h0nalt(reshape(ISC.isc_corr_mean(2:end,:, :), [],1), ...
+        reshape(ISC.isc_corr_mean(1,:, :), [],1), ...
+        r_crit_singlefeat_max, r_crit_singlefeat_min, outfig, show_plot)
+
     % downsampling behavioural cumulative agreements by interpolation
     beahv = sum(FaceRatingsProcessed >= agreement_perc, 3);
     %beahvd = FaceRatingsOverlap;        
@@ -38,25 +46,23 @@ end
             squeeze(ISC.isc_corr_mean(1, feat, :)));
     end
     
-    mean_subj_sign = squeeze(ISC.isc_corr_mean(1, :, :));
-    mean_subj_sign( mean_subj_sign < r_crit_singlefeat_max' & ...
-        mean_subj_sign > r_crit_singlefeat_min') = nan;
-
-    plot_hist_h0nalt(reshape(ISC.isc_corr_mean(2:end,:, :), [],1), ...
-        reshape(ISC.isc_corr_mean(1,:, :), [],1), ...
-        r_crit_singlefeat_max, r_crit_singlefeat_min, outfig, show_plot)
-
+    % get the vertices indices for the kmax highest and lowest correlation
+    % values between pdist and behavioral data, below significant level
     [corr_feat_value_max, corr_feat_ind_max] = maxk(corr_beahv(pvalue_corr < alpha/2), kmax);
     [corr_feat_value_min, corr_feat_ind_min] = mink(abs(corr_beahv(pvalue_corr < alpha/2)), kmax);
     corr_feat_value = [corr_feat_value_max, corr_feat_value_min];
     corr_feat_ind = [corr_feat_ind_max, corr_feat_ind_min];
 
+    % plot corr temporal series for the features with top significant correlation with behav.
     plot_tseries(downsampled_behav, ISC, corr_feat_ind_max, corr_feat_value_max, r_crit_singlefeat_min, r_crit_singlefeat_max, outfig, show_plot)
+    % same but with facial space representation of the features
     plot_tseries_and_face(downsampled_behav, ISC, corr_feat_ind_max, corr_feat_value_max, r_crit_singlefeat_min, r_crit_singlefeat_max, outfig, show_plot)
     
+    % scatter facial pdist with highest and absolute lowest correlation
+    % from the kmax features with highest corr with behavioural data
     plot_res_and_save(ISC.mean_pos_3nn, corr_feat_value, ...
-        corr_feat_ind, ISC.method, ISC.fps, ISC.prop_agreem, ...
-        ISC.outpath, ISC.datapath, ISC.num_neigh, ISC.nb_features, outfig, show_plot);
+        corr_feat_ind, ISC.method, ISC.datapath, ISC.num_neigh, ...
+        ISC.nb_features, outfig, show_plot);
 end
 
 function is_tcorr(ISC)

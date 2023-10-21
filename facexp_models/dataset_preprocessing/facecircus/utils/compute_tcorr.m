@@ -1,5 +1,4 @@
 function tcorr = compute_tcorr(nb_windows, nb_perm, nb_features, t_win, frame_indices, perms_sub1, sub1, sub2, perms_sub2)
-%function [tcorr, fw_err, p_value] = compute_tcorr(nb_windows, nb_perm, nb_features, t_win, frame_indices, perms_sub1, sub1, sub2, perms_sub2)
 hop_size = int32(t_win/3);
 tcorr = cell(nb_windows, nb_perm);
 frame_indices_slices_schema = get_frame_list_per_window(frame_indices, t_win, hop_size);
@@ -31,24 +30,8 @@ parfor j = 1: nb_perm + 1
             tcorr{slice_i, j} = fast_corr( ...
                 sub1_perm_slice', ...
                 sub2_perm_slice')';
-
-            % ok for each suj pair but not for mean_subj
-            %if j == 1
-            %    tcorr{slice_i, j} = tmp_corr;
-            %    r_rank_comp = ones(size(tcorr{slice_i, 1}));
-            %else
-            %    r_rank_comp = r_rank_comp + tcorr{slice_i, 1} > tcorr{slice_i, j};
-            %    fw_err{slice_i, j} = [...
-            %        mean(tmp_corr), ...
-            %        std(tmp_corr), ...
-            %        max(tmp_corr), ...
-            %        min(tmp_corr), ...
-            %        quantile(tmp_corr, 0.95), ...
-            %        quantile(tmp_corr, 0.05)];
-            %end
     end
-    % ok for each suj pair but not for mean_subj
-    % p_value{slice_i} = 1 - r_rank_comp/(nb_perm+1);
+
 
 end
 end

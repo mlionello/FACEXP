@@ -4,7 +4,6 @@ function plot_hist_h0nalt(h0, alt, fw_max, fw_min, outpath, show)
     else
         fig = figure('Visible', 0);
     end
-%     subplot(211)
     hold on;
     histogram(alt,'Normalization','probability', 'BinWidth', 0.0077);
     histogram(h0,'Normalization','probability', 'BinWidth', 0.007);
@@ -17,17 +16,6 @@ function plot_hist_h0nalt(h0, alt, fw_max, fw_min, outpath, show)
     hold off
     legend('data passing significance level', 'null distribution', 'fw 95perc', 'fw 5perc')
 
-%     subplot(212)
-%     hold on;
-%     histogram(alt,'Normalization','cdf', 'DisplayStyle', 'stairs');
-%     histogram(h0,'Normalization','cdf', 'DisplayStyle', 'stairs');
-%     line([fw_max fw_max],[0 1],...
-%         'color',[.2 .2 .2],...
-%         'linestyle', '--')
-%     line([fw_min fw_min],[0 1],...
-%         'color',[.2 .2 .2],...
-%         'linestyle', '--')
-%     hold off
     if ~show
         saveas(fig, fullfile(outpath, 'hist_features_against_null.png'));
         close(fig)
