@@ -28,7 +28,7 @@ function [isc_corr] = isc_pairwise_sampling(file_ids, w_lens, frame_indices, met
         nb_windows = length(w_lens);
         isc_corr = nan(nb_windows, nb_comb_subj, nb_features, nb_perm+1);
     elseif matches(method, 'tcorr')
-        nb_windows = length(get_frame_per_window(frame_indices, w_lens, int32(w_lens/3)));
+        nb_windows = length(get_frame_list_per_window(frame_indices, w_lens, int32(w_lens/3)));
         stats = ['min', 'max', 'mean', 'std', '95perc', 'pval_unc'];
         isc_corr = zeros(nb_windows, nb_features);
         ws.stats = stats;
@@ -65,12 +65,20 @@ function [isc_corr] = isc_pairwise_sampling(file_ids, w_lens, frame_indices, met
                     w_lens, frame_indices, perms_sub1, sub1, sub2, ...
                     perms_sub2);
             elseif matches(method, 'tcorr')
-                isc_corr = isc_corr + compute_tcorr( ...
+                tcorr = compute_tcorr( ...
                     nb_windows, nb_perm, nb_features, ...
                     w_lens, frame_indices, perms_sub1, sub1, sub2, ...
-                    perms_sub2)/nb_comb_subj;
+                    perms_sub2);
+                tcorr = cat(2, tcorr{:});
+                tcorr = reshape(tcorr, ...
+                    nb_features, nb_windows, nb_perm+1);
+                if pair_counter == 1
+                    isc_corr = tcorr/single(nb_comb_subj);
+                else
+                    isc_corr = isc_corr + tcorr/single(nb_comb_subj);
+                end
             end
-            if mod(pair_counter, 10)==0
+            if mod(pair_counter, 50) == 0
                 checkout_id = compose('isc_corr_checkout_sub_%02d_subcomb_%03d', ...
                     sub_i, pair_counter);
                 save(fullfile(outpath, 'checkouts', checkout_id), ...
@@ -79,7 +87,6 @@ function [isc_corr] = isc_pairwise_sampling(file_ids, w_lens, frame_indices, met
             pair_counter = pair_counter + 1;
 
         end
-
     
     end
     fprintf(cr)

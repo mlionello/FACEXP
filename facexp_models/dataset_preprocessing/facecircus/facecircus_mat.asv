@@ -82,7 +82,6 @@ elseif matches(corr_method, 'tcorr')
 end
 nb_fetures = size(isc_corr_mean, 2);
 nb_windows = size(isc_corr_mean, 3);
-nb_perm = size(isc_corr_mean, 1)-1;
 
 ISC.method = method;
 ISC.corr_method = corr_method;
@@ -93,13 +92,12 @@ ISC.subj_id = subj_id;
 ISC.prop_agreem = prop_agreem;
 ISC.n_subjs = n_subjs;
 ISC.mean_pos_3nn = mean_pos_3nn;
-ISC.outpath = outpath;
+ISC.outpaht = outpath;
 ISC.datapath = datapath;
 ISC.fps = fps;
 ISC.num_neigh = num_neigh;
 ISC.nb_fetures = nb_fetures;
 ISC.nb_windows = nb_windows;
-ISC.nb_perm = nb_perm;
 
 filename_suffix = 1;
 filename = compose("isc_struct_wlen_%d_pa_%d_method_%s", ...

@@ -1,33 +1,21 @@
-function plot_res_and_save(mean_pos_3nn, values, indices, method, fps, prop_agreem, outpath, datapath, num_neigh, nb_features, outfig, show_plot)
+function plot_res_and_save(mean_pos_3nn, values, indices, method, fps, prop_agreem, outpath, datapath, num_neigh, nb_features)
 mincmap = -0.2;
 maxcmap = 0.3;
 indices= squeeze(indices);
 values= squeeze(values);
 template = h5read(datapath + '/h5out_30fps/local/l3celdsvq6yu4zufiag3rozjhmttv13n_output_local.h5', '/v');
 template =  squeeze(mean(template, 3));
-if show_plot
-    fig = figure('Visible', 1, 'Position',[0 0 1024 720]);
-else
-    fig = figure('Visible', 0, 'Position',[0 0 1024 720]);
-end
+fig = figure('Visible', 1, 'Position',[0 0 1024 720]);
 if size(indices, 1) ~= 1
     disp("check size(indices, 1) ~= 1")
     return
 end
 for max_min_switch = 0:1
-init_vx = max_min_switch*size(indices, 2)/2+1;
-end_vx = (max_min_switch+1)*size(indices, 2)/2;
-subplot(1, 2, max_min_switch+1)
-    if max_min_switch==0
-        title(compose("max corr [%.2f, %.2f]",min(values(init_vx:end_vx)), max(values(init_vx:end_vx)) ))
-    else
-        title(compose("min abs corr [%.2f, %.2f]",min(values(init_vx:end_vx)), max(values(init_vx:end_vx)) ))
-    end
 cmap = jet;
 scatter(template(1, :), template(2, :));
 hold on;
 if matches(method, 'l2')
-    for vx = init_vx: end_vx
+    for vx = max_min_switch*size(indices, 2)/2+1:size(indices, 2)/2
         if isnan(values( vx))
             break
         end
@@ -44,7 +32,7 @@ if matches(method, 'l2')
         end
     end
 elseif matches(method, "pdist")
-    for vx = init_vx: end_vx
+    for vx = 1: size(indices, 2)/2
         if isnan(values(vx))
             break
         end
@@ -74,10 +62,8 @@ if num_neigh > 0
 else
     knn_fid = 0;
 end
-if ~show_plot
-    filename = compose("max_corr_significant_features.png" );
-    saveas(fig, fullfile(outfig, filename));
-    close(fig);
-end
+filename = compose("%d_prop_%.1f_knn_%d.png", method, prop_agreem, knn_fid );
+saveas(fig, fullfile(outpath, filename));
+%close(fig);
 
 end
