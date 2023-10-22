@@ -14,7 +14,7 @@ end
         FaceRatingsProcessed = FaceRatingsProcessed.FaceRatingsProcessed;
     end
     suffix = 1;
-    outfig = fullfile(ISC.outpath, 'figures', compose('agreelvl_%d_kmax_%d_%s_winlen_%d_', agreement_perc, kmax, ISC.corr_method, ISC.w_lens));
+    outfig = fullfile(ISC.outpath, 'figures', compose('agreelvl_%d_kmax_%d_%s_', agreement_perc, kmax, ISC.corr_method ));
     while exist(outfig+string(suffix), 'dir'); suffix = suffix + 1; end
     outfig = outfig + string(suffix);
     if ~show_plot; mkdir(outfig); end

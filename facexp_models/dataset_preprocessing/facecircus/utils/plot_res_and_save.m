@@ -52,7 +52,7 @@ elseif matches(method, "pdist")
         ind2sqr(indices( vx)) = 1;
         [i, j] = find(squareform(ind2sqr));
         if length(values) > 1
-            color_idx = round(interp1(linspace(mincmap, maxcmap, size(cmap, 1)), 1:size(cmap, 1), values(vx)));
+            color_idx = round(interp1(linspace(min(mincmap,values(vx)), max(maxcmap,values(vx)), size(cmap, 1)), 1:size(cmap, 1), values(vx)));
         else
             color_idx = 100;
         end

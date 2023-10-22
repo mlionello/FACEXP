@@ -1,10 +1,10 @@
 clc; clear; addpath('utils');
 fps = 30;
-corr_method = 'corr';
-w_lens = 0;
+corr_method = 'tcorr';
+w_lens = 5*fps;
 
 num_neigh = 5;
-method = 'pdist'; % supported 'l2' or 'pdist'
+method = 'l2'; % supported 'l2' or 'pdist'
 
 prop_agreem = 0;
 
@@ -42,6 +42,9 @@ for j = 1:length(h5_files)
         file_ids{j} = data_file_path + '.mat';
         fprintf(" done\n")
     else
+        if ~exist(fullfile(outpath, 'subjects'), 'dir')
+            mkdir(fullfile(outpath, 'subjects'))
+        end
         [data_in, file_ids{j}] = preprocess_h5_files(in_folder, fullfile(outpath, 'subjects'), h5_files{j}, num_neigh, method, data_file_path);
     end
 end
@@ -104,7 +107,7 @@ ISC.nb_perm = nb_perm;
 filename_suffix = 1;
 filename = compose("isc_struct_wlen_%d_pa_%d_method_%s", ...
     w_lens, prop_agreem, corr_method);
-while exist(fullfile(outpath, filename+string(filename_suffix)))
+while exist(fullfile(outpath, filename+string(filename_suffix)+'.mat'))
     filename_suffix = filename_suffix + 1;
 end
 save(fullfile(outpath, filename+string(filename_suffix)), "ISC", '-v7.3')
