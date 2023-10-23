@@ -11,4 +11,5 @@ mediapipe/*/*
 *.mp4
 *.tar.gz
 *.mat
+*.asv
 data/
