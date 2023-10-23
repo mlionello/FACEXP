@@ -1,9 +1,8 @@
-function analyse_sliding_window_isc(ISC, FaceRatingsProcessed, alpha, agreement_perc, kmax, show_plot)
+function analyse_sliding_window_isc(ISC, FaceRatingsProcessed, alpha, kmax, show_plot)
 arguments
     ISC {is_tcorr(ISC)};
     FaceRatingsProcessed = [];
     alpha = 0.05;
-    agreement_perc = 100;
     kmax = 10;
     show_plot = 0;
 end
@@ -14,7 +13,7 @@ end
         FaceRatingsProcessed = FaceRatingsProcessed.FaceRatingsProcessed;
     end
     suffix = 1;
-    outfig = fullfile(ISC.outpath, 'figures', compose('agreelvl_%d_kmax_%d_%s_winlen_%d_', agreement_perc, kmax, ISC.corr_method, ISC.w_lens));
+    outfig = fullfile(ISC.outpath, 'figures', compose('kmax_%d_%s_winlen_%d_', kmax, ISC.corr_method, ISC.w_lens));
     while exist(outfig+string(suffix), 'dir'); suffix = suffix + 1; end
     outfig = outfig + string(suffix);
     if ~show_plot; mkdir(outfig); end
