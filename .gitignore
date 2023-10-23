@@ -2,6 +2,7 @@ samplevideo/*/*
 facexp_models/results/*/*
 facexp_models/tmp*
 mediapipe/*/*
+facexp_models/old_code
 *.pkl
 *.png
 *.zip
@@ -12,4 +13,6 @@ mediapipe/*/*
 *.tar.gz
 *.mat
 *.asv
+*.gif
+*.txt
 data/
