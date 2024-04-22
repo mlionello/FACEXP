@@ -14,4 +14,5 @@ correlating with reported emotional peaks, suggesting potential for wider applic
 ### Affiliations
 - IMT Lucca - IMT Lucca - Lucca Social and Affective Neuroscience (SANe) group
 - MoMiLab - IMT School for Advanced
-- 
+
+[Conference Poster](https://github.com/mlionello/FACEXP/blob/master/facexp/sipf_facexp.pdf)
